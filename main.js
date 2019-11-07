@@ -207,7 +207,6 @@ let tempChart = {
     };
 
 
-
 let priceChart = {
     chart: {
         marginLeft: 40, 
@@ -272,6 +271,26 @@ function getXRange(interval, start, end){
     return xval
 }
 
+function getAveragePower(){
+    var sum = {};
+    var keys = Object.keys(globalData);
+    for(i =0;i<keys.length;i++){
+        for (j = 0; j<8;j++){
+            if (globalData[keys[j]][j][0] in sum == false){
+                sum[globalData[keys[j]][j][0]] = 0;
+            }
+            sum[globalData[keys[j]][j][0]] += globalData[keys[j]][j][1]
+        }
+    }
+    var output = [];
+    var outputKey = Object.keys(sum);
+    for(i = 0;i<outputKey.length;i++){
+        if (outputKey[i]!='exports' && outputKey[i]!='pumps'){
+            output.push([outputKey[i],sum[outputKey[i]]/keys.length]);
+        }
+    }
+    return output ;
+}
 function getPieData(timeseries){
     var output = []
     var pieData = globalData[timeseries];
@@ -380,7 +399,6 @@ Highcharts.ajax({
         document.getElementById('power').appendChild(chartDiv);
         areaChart.series = computePowerData(activity);
         Highcharts.chart(chartDiv, areaChart);
-        console.log(areaChart.series);
 
         var chartDiv = document.createElement('div');
         chartDiv.className = 'chart';
@@ -395,35 +413,41 @@ Highcharts.ajax({
         Highcharts.chart(chartDiv,tempChart);
 
 
-        console.log(globalData);
         pieChart = new Highcharts.chart('pieChart', {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie'
+                type: 'pie',
+                renderTo:'container',
+                animation: false
             },
             title: {
-                text: 'Power distribution'
+                text: 'Power distribution',
             },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
+            credits: {
+                enabled: false
             },
             plotOptions: {
                 pie: {
-                    size: '100%',
+                    shadow: false,
+                    size:'50%',
+                    center: ['50%', '50%'],
                     allowPointSelect: true,
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                    }
-                }
+                        format: '{point.total:.2f}: <b>{point.name}</b>: {point.percentage:.1f} %'
+                    }, 
+                },
+                
             },
             series: [{
-                name: 'Average sales each day of the week',
+                name: 'none',
                 colorByPoint: true,
-                data: getPieData(1571580000000),
+                data: getAveragePower(),
+                size: '80%',
+                innerSize:'60%',
             }]
         })
     }
