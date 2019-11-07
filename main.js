@@ -11,7 +11,7 @@ mouse/touch event handler to bind the charts together.
  * built-in events with handlers defined on the parent element.
  */
 ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
-    ['power','price','temperature'].forEach(function(con){
+    ['power','temperature','price','pieChart'].forEach(function(con){
         document.getElementById(con).addEventListener(
         eventType,
         function (e) {
@@ -29,12 +29,14 @@ mouse/touch event handler to bind the charts together.
 
                 if (point) {
                     point.highlight(e);
+                    pieChart.series[0].setData(getPieData(point.x));
                 }
             }
         })
         }
     );
 });
+
 /**
  * Highlight a point by showing tooltip, setting hover state and draw crosshair
  */
@@ -78,7 +80,7 @@ Highcharts.setOptions({
 var globalData = {};
 let areaChart = {
         chart: {
-            marginLeft: 40, // Keep all charts left aligned
+            marginLeft: 40, 
             spacingTop: 20,
             spacingBottom: 20,
             type: 'area'
@@ -204,29 +206,7 @@ let tempChart = {
     series: [],
     };
 
-let pieChart = new Highcharts.chart('pieChart', {
-    chart: {
-        plotBackgroundColor: null,
-        plotBorderWidth: null,
-        plotShadow: false,
-        type: 'pie',
-    },
-    title :{
-        text: "power"
-    },
-    plotOptions: {
-        pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-                enabled: true,
-                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-            }
-        }
-    },
 
-    series: [{colorByPoint:true,data:globalData[1571580000000]}],
-});
 
 let priceChart = {
     chart: {
@@ -292,7 +272,17 @@ function getXRange(interval, start, end){
     return xval
 }
 
-function rooftopData(xval,input){
+function getPieData(timeseries){
+    var output = []
+    var pieData = globalData[timeseries];
+    for(i =0;i<pieData.length;i++){
+        if (pieData[i][1] > 0){
+            output.push(pieData[i]);
+        }
+    }
+    return output;
+}
+function rooftopData(xval,input,typeData){
     var data = [];
     var length = xval.length-2;
     for (j = 0; j<length;j++){
@@ -300,12 +290,11 @@ function rooftopData(xval,input){
         if (xval[j] in globalData == false){
             globalData[xval[j]] = [];
         }
-        globalData[xval[j]].push(input[j]);
+        globalData[xval[j]].push([typeData,input[j]]);
     }
     return data;
 }
-
-function positivePower(xval,input){
+function positivePower(xval,input,typeData){
     var data = [];
     for (j = 0; j<xval.length-5;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
@@ -313,13 +302,12 @@ function positivePower(xval,input){
             if (xval[j] in globalData == false){
                 globalData[xval[j]] = [];
             }
-            globalData[xval[j]].push(input[j]);
+            globalData[xval[j]].push([typeData,input[j]]);
         }
     }
     return data;
 }
-
-function negativePower(xval,input){
+function negativePower(xval,input,typeData){
     input = input.map(function(element) {
         if (element!=0){
             return -1*element;
@@ -330,6 +318,10 @@ function negativePower(xval,input){
     for (j = 0; j<xval.length-5;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
             data.push([xval[j],input[j]]);
+            if (xval[j] in globalData == false){
+                globalData[xval[j]] = [];
+            }
+            globalData[xval[j]].push([typeData,input[j]]);
         }
     }
     return data;
@@ -340,22 +332,22 @@ function computePowerData(activity){
     activity.forEach(function(dataset, i){
         if (dataset.type == "power"){
             if (dataset.fuel_tech == 'rooftop_solar'){
-                var xval = getXRange(dataset.forecast.interval,new Date(dataset.forecast.start).getTime(),new Date(dataset.forecast.last).getTime());
-                data.push({name:dataset.fuel_tech,data:rooftopData(xval,dataset.forecast.data)});
+                var start = new Date(dataset.forecast.start).getTime()/1000;
+                var end = new Date(dataset.forecast.last).getTime()/1000; 
+                var xval = getXRange(dataset.forecast.interval,start,end);
+                data.push({name:dataset.fuel_tech,data:rooftopData(xval,dataset.forecast.data,'rooftop_solar')});
             }
             else{
                 var xval = getXRange(dataset.history.interval,dataset.history.start, dataset.history.last);
                 if (dataset.fuel_tech == 'exports'|| dataset.fuel_tech == 'pumps'){
-                    data.unshift({name:dataset.fuel_tech,data:negativePower(xval,dataset.history.data)});
+                    data.unshift({name:dataset.fuel_tech,data:negativePower(xval,dataset.history.data,dataset.fuel_tech)});
                 }
                 else{
-                    data.push({name:dataset.fuel_tech, data:positivePower(xval,dataset.history.data)})
+                    data.push({name:dataset.fuel_tech, data:positivePower(xval,dataset.history.data,dataset.fuel_tech)})
                 }
-        }
-    }
-        
+            }
+        } 
     })
-    console.log(data);
     return data.reverse();
 };
 function computePriceData(activity){
@@ -367,7 +359,6 @@ function computePriceData(activity){
     }
     return data;
 }
-
 function computeTemperatureData(activity){
     var dataset = activity[10];
     dataset.x_axis = getXRange(dataset.history.interval, dataset.history.start, dataset.history.last);
@@ -377,8 +368,6 @@ function computeTemperatureData(activity){
     }
     return data;
 }
-
-
 
 Highcharts.ajax({
     url:'./springfield.json',
@@ -391,6 +380,7 @@ Highcharts.ajax({
         document.getElementById('power').appendChild(chartDiv);
         areaChart.series = computePowerData(activity);
         Highcharts.chart(chartDiv, areaChart);
+        console.log(areaChart.series);
 
         var chartDiv = document.createElement('div');
         chartDiv.className = 'chart';
@@ -404,15 +394,38 @@ Highcharts.ajax({
         tempChart.series = [{"data":computeTemperatureData(activity)}];
         Highcharts.chart(chartDiv,tempChart);
 
-        
 
-    
-        // var chartDiv = document.createElement('div');
-        // chartDiv.className = 'chart';
-        // document.getElementById("pie").appendChild(chartDiv);
-        // pieChart.series = globalData[1571580000000];
-        // Highcharts.chart(chartDiv,pieChart);
-
+        console.log(globalData);
+        pieChart = new Highcharts.chart('pieChart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Power distribution'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
+            },
+            plotOptions: {
+                pie: {
+                    size: '100%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                name: 'Average sales each day of the week',
+                colorByPoint: true,
+                data: getPieData(1571580000000),
+            }]
+        })
     }
 });
 
