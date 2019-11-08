@@ -32,9 +32,24 @@ mouse/touch event handler to bind the charts together.
                     point.highlight(e);
                     if (i === 0) {
                         // renderPieChart(e.index);
-                        pieChart.series[0].setData(getPieData(point.x));
-                        pieChart.setTitle({'text':getCurrentTotal(getPieData(point.x))+'MW'});
-                        barChart.series[0].setData(computeToBarData(getPieData(point.x)));
+                        var pieData = getPieData(point.x);
+                        var barData = computeToBarData(pieData);
+                        pieChart.series[0].setData(pieData);
+                        pieChart.setTitle({'text':getCurrentTotal(pieData)+'MW'});
+                        barChart.series[0].setData(barData);
+                        var structure = document.getElementById('inputTable');
+                        var totalData = getTotalData(point.x);
+                        console.log(totalData);
+                        for (i = 1;i<totalData.length+1;i++){
+                            if (totalData[i-1]>1|| totalData[i-1]<-1){
+                                structure.rows[i].cells[1].innerText = Math.round(totalData[i-1]);
+                            }
+                            else{
+                                structure.rows[i].cells[1].innerText = totalData[i-1];
+                            }
+                        }
+                        // console.log(computeToBarData(getTotalData(point.x)));
+
                     }
                 }
             }
@@ -79,6 +94,7 @@ function syncExtremes(e) {
 //     Highcharts.chart("pie", );
 // }
 
+var colors = ['#228B22','#1E90FF','#ffa07a','#ff0000','#000000','#9370DB','#87CEFA']
 Highcharts.setOptions({
     global:{
         useUTC: false,
@@ -86,8 +102,8 @@ Highcharts.setOptions({
 })
 var globalData = {};
 let areaChart = {
+    colors: colors,
         chart: {
-            
             marginLeft: 40, 
             spacingTop: 20,
             spacingBottom: 20,
@@ -95,10 +111,13 @@ let areaChart = {
             
         },
         title: {
-            text: 'Generation MW',
+            text: '<b>Generation</b> MW',
             align: 'left',
             margin: 0,
-            x: 30
+            x: 30,
+            style:{
+                fontSize: '16px',
+            }
         },
         credits: {
             enabled: false
@@ -111,7 +130,10 @@ let areaChart = {
             verticalAlign: 'middle',
         },
         xAxis: {
-            crosshair: true,
+            crosshair: {
+                color: 'red',
+                width: 1,
+            },
             type:'datetime',
             tickmarkPlacement:'on',
             labels: {
@@ -152,19 +174,23 @@ let areaChart = {
                     y: 10 // align to title
                 };
             },
+            formatter: function(){
+                var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+                return '<span style="background:#FA8072">'+time+'</span>';
+            },
             borderWidth: 0,
-            backgroundColor: 'none',
-            pointFormat: '{point.x:%b-%e %l:%M %p}'+' Total '+'{point.total}'+'MW',
-            headerFormat: '',
+            // pointFormat: 'Total '+'{point.total}'+'MW',
+            // headerFormat: '<span style="background-color:#blue">{point.x:%e %b,%l:%M %p }</span>',
             shadow: false,
             style: {
-                fontSize: '18px'
+                fontSize: '14px',
             },
         },
         series: []
     };
 
 let tempChart = {
+    colors: ['red'],
     exporting:{
         enabled:false,
     },
@@ -174,10 +200,13 @@ let tempChart = {
         spacingBottom: 20
     },
     title: {
-        text: "temperature",
+        text: "<b>Temperature</b> °F",
         align: 'left',
         margin: 0,
-        x: 30
+        x: 30,
+        style:{
+            fontSize: '16px',
+        }
     },
     credits: {
         enabled: false
@@ -186,10 +215,13 @@ let tempChart = {
         enabled: false
     },
     xAxis: {
-            crosshair: true,
+            crosshair: {
+                color: 'red',
+                width: 1,
+            },
             type:'datetime',
             labels: {
-                format: '{value:%b-%e}'
+                format: '{value:%b%e}'
             },
             tickmarkPlacement:'on',
             events: {
@@ -213,8 +245,8 @@ let tempChart = {
         pointFormat: '{point.y}',
         valuePrefix: '', 
         valueSuffix: '°F',
-        headerFormat: '',
         shadow: false,
+        headerFormat: '',
         style: {
             fontSize: '18px'
         }
@@ -223,6 +255,7 @@ let tempChart = {
     };
 
 let priceChart = {
+    colors: ['red'],
     exporting:{
         enabled:false,
     },
@@ -232,10 +265,13 @@ let priceChart = {
         spacingBottom: 20
     },
     title: {
-        text: "price",
+        text: "<b>Price</b> $/MWh",
         align: 'left',
         margin: 0,
-        x: 30
+        x: 30,
+        style:{
+            fontSize: '16px',
+        }
     },
     credits: {
         enabled: false
@@ -244,15 +280,18 @@ let priceChart = {
         enabled: false
     },
     xAxis: {
-            crosshair: true,
-            type:'datetime',
-            labels: {
-                format: '{value:%b-%e}'
-            },
-            tickmarkPlacement:'on',
-            events: {
-                setExtremes: syncExtremes
-            },
+        crosshair: {
+            color: 'red',
+            width: 1,
+        },
+        type:'datetime',
+        labels: {
+            format: '{value:%b-%e}'
+        },
+        tickmarkPlacement:'on',
+        events: {
+            setExtremes: syncExtremes
+        },
     },
     yAxis: {
         title: {
@@ -274,20 +313,43 @@ let priceChart = {
         headerFormat: '',
         shadow: false,
         style: {
-            fontSize: '18px'
+            fontSize: '14px'
         }
     },
     series: [],
     };
 
-
+function getTotalData(timeseries){
+    var output = []
+    var sumPositive = 0;
+    var sumNegative = 0;
+    var data = globalData[timeseries];
+    for(i =0;i<data.length;i++){
+        if (data[i][0]==='exports'||data[i][0]==='pumps'){
+            output.unshift(data[i][1]);
+            sumNegative+=data[i][1];
+        }
+        else{
+            output.push(data[i][1]);
+            sumPositive+=data[i][1];
+        }
+    }
+    output.push(sumPositive);
+    output.unshift(sumNegative+sumPositive);
+    output.splice(3,0,sumNegative);
+    return output.reverse();
+}
 function changeGraphPie() {
-  var x = document.getElementById('pieChart');
-  var y = document.getElementById('barChart')
+    var x = document.getElementById('pieChart');
+    var y = document.getElementById('barChart')
     x.style.visibility = 'visible';
     y.style.visibility = 'hidden';
     x.style.display = "block";
     y.style.display = "none";
+    var piebutton = document.getElementById('piebutton');
+    var barbutton = document.getElementById('barbutton');
+    piebutton.style.backgroundColor = "#F5C9EF";
+    barbutton.style.backgroundColor = "#FFFFFF";
 }
 function changeGraphBar() {
     var x = document.getElementById('pieChart');
@@ -296,6 +358,10 @@ function changeGraphBar() {
     y.style.display = "block";
     x.style.visibility = 'hidden';
     x.style.display = "none";
+    var piebutton = document.getElementById('piebutton');
+    var barbutton = document.getElementById('barbutton');
+    piebutton.style.backgroundColor = "#FFFFFF";
+    barbutton.style.backgroundColor = "#F5C9EF";
   }
 
 function getXRange(interval, start, end){
@@ -339,11 +405,11 @@ function getPieData(timeseries){
     var output = []
     var pieData = globalData[timeseries];
     for(i =0;i<pieData.length;i++){
-        if (pieData[i][1] > 0){
+        if (pieData[i][0]!=='exports'&&pieData[i][0]!=='pumps'){
             output.push(pieData[i]);
         }
     }
-    return output;
+    return output.reverse();
 }
 function positivePower(xval,input,typeData){
     var data = [];
@@ -413,6 +479,7 @@ function computeTemperatureData(activity){
     return data;
 }
 function computeToBarData(dataset){
+
     var output = [];
     for (i = 0;i<dataset.length;i++){
         output.push(dataset[i][1]);
@@ -420,7 +487,7 @@ function computeToBarData(dataset){
     var total = output.reduce((a,b)=>a+b);
     var finaloutput = [];
     for (j = 0;j<dataset.length;j++){
-        finaloutput.push(Math.round(100*output[j]/total*100)/100);
+        finaloutput.push(100*output[j]/total);
     }
     return finaloutput;
 }
@@ -432,7 +499,7 @@ function getLabel(){
             output.push(firstKey[i][0])
         }
     }
-    return output;
+    return output.reverse();
 }
 Highcharts.ajax({
     url:'./springfield.json',
@@ -460,6 +527,7 @@ Highcharts.ajax({
 
 
         pieChart = new Highcharts.chart('pieChart', {
+            colors: colors,
             chart: {
                 type: 'pie',
             },
@@ -493,8 +561,10 @@ Highcharts.ajax({
                 innerSize:'60%',
             }]
         })
-
+        var piebutton = document.getElementById('piebutton');
+        piebutton.style.backgroundColor = "#F5C9EF";
         barChart = new Highcharts.chart('barChart', {
+            colors: colors,
             chart: {
                 type: 'bar',
                 animation: false,
@@ -510,6 +580,9 @@ Highcharts.ajax({
                 title: {
                     text: null
                 }
+            },
+            legend:{
+                enabled:false,
             },
             yAxis: {
                 min: 0,

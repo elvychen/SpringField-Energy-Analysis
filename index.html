@@ -18,7 +18,76 @@
             <table >
                 <tr>
                     <td id = "power"></td>
-                    <td></td>
+                    <td>
+                        <table id = "inputTable">
+                            <tr>
+                                <th></th>
+                                <th><b>Power</b><br>MW</th>
+                                <th><b>Contribution</b><br>to demand</th>
+                                <th><b>Av.Value</b><br>$/MWh</th>
+                            </tr>
+                            <tr>
+                                <th>Sources</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>Wind</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>   
+                            <tr>
+                                <th>Hydro</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>  
+                            <tr>
+                                <th>Gas (CCGT)</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>Distillate</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>   
+                            <tr>
+                                <th>Black Coal</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr> 
+                            <tr>
+                                <th>Loads</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr> 
+                            <tr>
+                                <th>Exports</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr> 
+                            <tr>
+                                <th>Pumps</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr> 
+                            <tr>
+                                <th>Net</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr> 
+                        </table>
+                    </td>
                 </tr>
                 <tr>
                     <td >
@@ -28,12 +97,12 @@
                         </div>
                     </td>
                     <td>
-                        <div>
+                        <div class="button" align = "center"> 
+                            <img class="button" id = "piebutton" onclick = "changeGraphPie()" src = "./assets/chart-pie-solid.svg">
+                            <img class="button" id = "barbutton" onclick = "changeGraphBar()"data-rotate="90" src = "./assets/chart-bar-solid.svg">
+                        </div>
                             <p id="pieChart"></p>
                             <p id="barChart"></p>
-                            <button onclick="changeGraphPie()">pie</button>
-                            <button onclick="changeGraphBar()">bar</button>
-                        </div>
                     </td>
                 </tr>
             </table>

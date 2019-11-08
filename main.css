@@ -1,5 +1,21 @@
-table, tr, td {
+body{
+    background-color: "#ece9e6";
+}
+table, tr, td, th {
     border: 1px solid black;
+}
+#button{
+    width:30px;
+    height:30px;
+    display: block;
+    margin: 0 auto;
+}
+img {
+    max-width: 5%;
+    height: auto;
+}
+#barbutton{
+    transform: rotate(90deg) scaleX(-1);
 }
 #pieChart {
     width: 600px;
