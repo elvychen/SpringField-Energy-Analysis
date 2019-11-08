@@ -39,15 +39,7 @@ mouse/touch event handler to bind the charts together.
                         barChart.series[0].setData(barData);
                         var structure = document.getElementById('inputTable');
                         var totalData = getTotalData(point.x);
-                        console.log(totalData);
-                        for (i = 1;i<totalData.length+1;i++){
-                            if (totalData[i-1]>1|| totalData[i-1]<-1){
-                                structure.rows[i].cells[1].innerText = Math.round(totalData[i-1]);
-                            }
-                            else{
-                                structure.rows[i].cells[1].innerText = totalData[i-1];
-                            }
-                        }
+                        fillTable(totalData,structure);
                         // console.log(computeToBarData(getTotalData(point.x)));
 
                     }
@@ -59,6 +51,16 @@ mouse/touch event handler to bind the charts together.
     );
 });
 
+function fillTable(data,structure){
+    for (i = 1;i<data.length+1;i++){
+        if (data[i-1]>1|| data[i-1]<-1){
+            structure.rows[i].cells[1].innerText = Math.round(data[i-1]);
+        }
+        else{
+            structure.rows[i].cells[1].innerText = data[i-1];
+        }
+    }
+}
 /**
  * Highlight a point by showing tooltip, setting hover state and draw crosshair
  */
