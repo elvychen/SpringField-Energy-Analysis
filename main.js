@@ -11,7 +11,7 @@ mouse/touch event handler to bind the charts together.
  * built-in events with handlers defined on the parent element.
  */
 ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
-    ['power','temperature','price','pieChart'].forEach(function(con){
+    ['power','temperature','price','pieChart','barChart'].forEach(function(con){
         document.getElementById(con).addEventListener(
         eventType,
         function (e) {
@@ -20,6 +20,7 @@ mouse/touch event handler to bind the charts together.
                 i,
                 event;
 
+            
             for (i = 0; i < Highcharts.charts.length; i = i + 1) {
                 chart = Highcharts.charts[i];
                 // Find coordinates within the chart
@@ -29,9 +30,15 @@ mouse/touch event handler to bind the charts together.
 
                 if (point) {
                     point.highlight(e);
-                    pieChart.series[0].setData(getPieData(point.x));
+                    if (i === 0) {
+                        // renderPieChart(e.index);
+                        pieChart.series[0].setData(getPieData(point.x));
+                        pieChart.setTitle({'text':getCurrentTotal(getPieData(point.x))+'MW'});
+                        barChart.series[0].setData(computeToBarData(getPieData(point.x)));
+                    }
                 }
             }
+            
         })
         }
     );
@@ -75,15 +82,17 @@ function syncExtremes(e) {
 Highcharts.setOptions({
     global:{
         useUTC: false,
-    }
+    },
 })
 var globalData = {};
 let areaChart = {
         chart: {
+            
             marginLeft: 40, 
             spacingTop: 20,
             spacingBottom: 20,
-            type: 'area'
+            type: 'area',
+            
         },
         title: {
             text: 'Generation MW',
@@ -95,7 +104,11 @@ let areaChart = {
             enabled: false
         },
         legend: {
-            enabled: false
+            enabled: true,
+            floating: true,
+            align: 'right',
+            layout: 'vertical',
+            verticalAlign: 'middle',
         },
         xAxis: {
             crosshair: true,
@@ -152,6 +165,9 @@ let areaChart = {
     };
 
 let tempChart = {
+    exporting:{
+        enabled:false,
+    },
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
@@ -206,8 +222,10 @@ let tempChart = {
     series: [],
     };
 
-
 let priceChart = {
+    exporting:{
+        enabled:false,
+    },
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
@@ -262,6 +280,24 @@ let priceChart = {
     series: [],
     };
 
+
+function changeGraphPie() {
+  var x = document.getElementById('pieChart');
+  var y = document.getElementById('barChart')
+    x.style.visibility = 'visible';
+    y.style.visibility = 'hidden';
+    x.style.display = "block";
+    y.style.display = "none";
+}
+function changeGraphBar() {
+    var x = document.getElementById('pieChart');
+    var y = document.getElementById('barChart')
+    y.style.visibility = 'visible';
+    y.style.display = "block";
+    x.style.visibility = 'hidden';
+    x.style.display = "none";
+  }
+
 function getXRange(interval, start, end){
     interval = interval.substring(0,interval.length-1)*60;
     var xval = [];
@@ -275,11 +311,11 @@ function getAveragePower(){
     var sum = {};
     var keys = Object.keys(globalData);
     for(i =0;i<keys.length;i++){
-        for (j = 0; j<8;j++){
-            if (globalData[keys[j]][j][0] in sum == false){
-                sum[globalData[keys[j]][j][0]] = 0;
+        for (j = 0; j<7;j++){
+            if (globalData[keys[i]][j][0] in sum == false){
+                sum[globalData[keys[i]][j][0]] = 0;
             }
-            sum[globalData[keys[j]][j][0]] += globalData[keys[j]][j][1]
+            sum[globalData[keys[i]][j][0]] += globalData[keys[i]][j][1]
         }
     }
     var output = [];
@@ -289,7 +325,15 @@ function getAveragePower(){
             output.push([outputKey[i],sum[outputKey[i]]/keys.length]);
         }
     }
-    return output ;
+    return output.reverse();
+}
+
+function getCurrentTotal(data){
+    var sum = 0;
+    for(i = 0;i<data.length;i++){
+        sum += data[i][1];
+    }
+    return sum.toFixed(2);
 }
 function getPieData(timeseries){
     var output = []
@@ -301,21 +345,9 @@ function getPieData(timeseries){
     }
     return output;
 }
-function rooftopData(xval,input,typeData){
-    var data = [];
-    var length = xval.length-2;
-    for (j = 0; j<length;j++){
-        data.push([xval[j],input[j]]);
-        if (xval[j] in globalData == false){
-            globalData[xval[j]] = [];
-        }
-        globalData[xval[j]].push([typeData,input[j]]);
-    }
-    return data;
-}
 function positivePower(xval,input,typeData){
     var data = [];
-    for (j = 0; j<xval.length-5;j++){
+    for (j = 0; j<xval.length;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
             data.push([xval[j],input[j]]);
             if (xval[j] in globalData == false){
@@ -334,7 +366,7 @@ function negativePower(xval,input,typeData){
         return element;
     })
     var data = [];
-    for (j = 0; j<xval.length-5;j++){
+    for (j = 0; j<xval.length;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
             data.push([xval[j],input[j]]);
             if (xval[j] in globalData == false){
@@ -349,14 +381,7 @@ function negativePower(xval,input,typeData){
 function computePowerData(activity){
     var data = []
     activity.forEach(function(dataset, i){
-        if (dataset.type == "power"){
-            if (dataset.fuel_tech == 'rooftop_solar'){
-                var start = new Date(dataset.forecast.start).getTime()/1000;
-                var end = new Date(dataset.forecast.last).getTime()/1000; 
-                var xval = getXRange(dataset.forecast.interval,start,end);
-                data.push({name:dataset.fuel_tech,data:rooftopData(xval,dataset.forecast.data,'rooftop_solar')});
-            }
-            else{
+        if (dataset.type == "power" && dataset.fuel_tech !== 'rooftop_solar'){
                 var xval = getXRange(dataset.history.interval,dataset.history.start, dataset.history.last);
                 if (dataset.fuel_tech == 'exports'|| dataset.fuel_tech == 'pumps'){
                     data.unshift({name:dataset.fuel_tech,data:negativePower(xval,dataset.history.data,dataset.fuel_tech)});
@@ -364,7 +389,7 @@ function computePowerData(activity){
                 else{
                     data.push({name:dataset.fuel_tech, data:positivePower(xval,dataset.history.data,dataset.fuel_tech)})
                 }
-            }
+            
         } 
     })
     return data.reverse();
@@ -387,7 +412,28 @@ function computeTemperatureData(activity){
     }
     return data;
 }
-
+function computeToBarData(dataset){
+    var output = [];
+    for (i = 0;i<dataset.length;i++){
+        output.push(dataset[i][1]);
+    }
+    var total = output.reduce((a,b)=>a+b);
+    var finaloutput = [];
+    for (j = 0;j<dataset.length;j++){
+        finaloutput.push(Math.round(100*output[j]/total*100)/100);
+    }
+    return finaloutput;
+}
+function getLabel(){
+    var firstKey = globalData[Object.keys(globalData)[0]];
+    var output = []
+    for (i = 0; i<7;i++){
+        if (firstKey[i][0]!=='exports'&&firstKey[i][0] !== 'pumps'){
+            output.push(firstKey[i][0])
+        }
+    }
+    return output;
+}
 Highcharts.ajax({
     url:'./springfield.json',
     dataType:'text',
@@ -415,15 +461,12 @@ Highcharts.ajax({
 
         pieChart = new Highcharts.chart('pieChart', {
             chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
                 type: 'pie',
-                renderTo:'container',
-                animation: false
             },
             title: {
-                text: 'Power distribution',
+                text: 'Average <br/>' + getCurrentTotal(getAveragePower())+' MW',
+                verticalAlign: 'middle',
+                floating: true,
             },
             credits: {
                 enabled: false
@@ -437,7 +480,7 @@ Highcharts.ajax({
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
-                        format: '{point.total:.2f}: <b>{point.name}</b>: {point.percentage:.1f} %'
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                     }, 
                 },
                 
@@ -450,6 +493,53 @@ Highcharts.ajax({
                 innerSize:'60%',
             }]
         })
+
+        barChart = new Highcharts.chart('barChart', {
+            chart: {
+                type: 'bar',
+                animation: false,
+            },
+            title: {
+                text: '',
+            },
+            credits: {
+                enabled: false
+            },
+            xAxis: {
+                categories: getLabel(),
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                visible: false,
+            },
+            plotOptions: {
+                bar: {
+                    shadow: false,
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function(){
+                            return this.y+'%'
+                        }
+                    }
+                },
+                series:{
+                    states:{
+                        hover: {
+                            enabled: false,
+                        },
+                        inactive:{
+                            opacity: 1
+                        }
+                    }
+                }
+            },
+            series: [{colorByPoint: true, type: 'bar', data:computeToBarData(getAveragePower())}]
+        })
+            
+            
     }
 });
 

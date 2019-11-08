@@ -21,12 +21,20 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td id = "price"></td>
-                    <td id = 'pieChart'></td>
-                </tr>
-                <tr>
-                    <td id = "temperature"></td>
-                    <td></td>
+                    <td >
+                        <div id = "tempprice">
+                            <p id = "price"></p>
+                            <p id = "temperature"></p>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <p id="pieChart"></p>
+                            <p id="barChart"></p>
+                            <button onclick="changeGraphPie()">pie</button>
+                            <button onclick="changeGraphBar()">bar</button>
+                        </div>
+                    </td>
                 </tr>
             </table>
             <script src="./main.js"></script>   
