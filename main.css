@@ -1,9 +1,7 @@
 body{
     background-color: "#ece9e6";
 }
-table, tr, td, th {
-    border: 1px solid black;
-}
+
 #button{
     width:30px;
     height:30px;

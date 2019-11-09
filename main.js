@@ -31,17 +31,19 @@ mouse/touch event handler to bind the charts together.
                 if (point) {
                     point.highlight(e);
                     if (i === 0) {
-                        // renderPieChart(e.index);
                         var pieData = getPieData(point.x);
+                        pieChart.options.colors = getPieColor();
                         var barData = computeToBarData(pieData);
                         pieChart.series[0].setData(pieData);
                         pieChart.setTitle({'text':getCurrentTotal(pieData)+'MW'});
                         barChart.series[0].setData(barData);
+                        barChart.xAxis[0].update({'categories':getLabel()});
                         var structure = document.getElementById('inputTable');
                         var totalData = getTotalData(point.x);
-                        fillTable(totalData,structure);
-                        // console.log(computeToBarData(getTotalData(point.x)));
-
+                        fillTable(totalData,structure,1,'','',[]);
+                        var percentage = getPercentageTotal(totalData);
+                        fillTable(percentage,structure,2,'','%',[1,7,10]);
+                        fillTable([globalPrice[point.index][1],0,0,0,0,0,0,0,0,0],structure,3,'$','',[7,10]);
                     }
                 }
             }
@@ -51,16 +53,6 @@ mouse/touch event handler to bind the charts together.
     );
 });
 
-function fillTable(data,structure){
-    for (i = 1;i<data.length+1;i++){
-        if (data[i-1]>1|| data[i-1]<-1){
-            structure.rows[i].cells[1].innerText = Math.round(data[i-1]);
-        }
-        else{
-            structure.rows[i].cells[1].innerText = data[i-1];
-        }
-    }
-}
 /**
  * Highlight a point by showing tooltip, setting hover state and draw crosshair
  */
@@ -92,9 +84,7 @@ function syncExtremes(e) {
         });
     }
 }
-// function getData(x, dataset){
-//     Highcharts.chart("pie", );
-// }
+
 
 var colors = ['#228B22','#1E90FF','#ffa07a','#ff0000','#000000','#9370DB','#87CEFA']
 Highcharts.setOptions({
@@ -103,6 +93,8 @@ Highcharts.setOptions({
     },
 })
 var globalData = {};
+var globalPrice = [];
+var overalArea = [];
 let areaChart = {
     colors: colors,
         chart: {
@@ -125,11 +117,7 @@ let areaChart = {
             enabled: false
         },
         legend: {
-            enabled: true,
-            floating: true,
-            align: 'right',
-            layout: 'vertical',
-            verticalAlign: 'middle',
+            enabled: false,
         },
         xAxis: {
             crosshair: {
@@ -165,10 +153,22 @@ let areaChart = {
                     lineWidth: 1,
                     lineColor: '#666666'
                 }
+            },
+            series:{
+                states:{
+                    hoever:{
+                        enabled: false,
+                    },
+                    inactive:{
+                        opacity: 1
+                    }
+                }
             }
         },
         tooltip: {
             shared :false,
+            useHTML: true,
+            split: false,
             positioner: function () {
                 return {
                     // right aligned
@@ -178,10 +178,10 @@ let areaChart = {
             },
             formatter: function(){
                 var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
-                return '<span style="background:#FA8072">'+time+'</span>';
+                return '<span style=\"background-color:red;">'+time+'</span>'+this.series.name+this.y+' total: '+'MW';
             },
             borderWidth: 0,
-            // pointFormat: 'Total '+'{point.total}'+'MW',
+            pointFormat: 'Total '+'{point.total}'+'MW',
             // headerFormat: '<span style="background-color:#blue">{point.x:%e %b,%l:%M %p }</span>',
             shadow: false,
             style: {
@@ -321,6 +321,68 @@ let priceChart = {
     series: [],
     };
 
+function changeGraph(element){
+    if (clicked[element][0]===0){
+        area.get(element).remove();
+        clicked[element][0] = 1;
+        if (clicked[element][1]<=4){
+            toRemove.push(clicked[element][1]);
+        }
+        
+    }
+    else{
+        for (i = 0; i<overalArea.length;i++){
+            if (overalArea[i]['id']==element){
+                var curr = overalArea[i];
+                curr['index'] = clicked[element][1];
+                curr['color'] = colors[i];
+                area.addSeries(overalArea[i]);
+            }
+
+        }
+        output = [];
+        for (j = 0;j<toRemove.length;j++){
+            if (toRemove[j]!==clicked[element][1]){
+                output.push(toRemove[j]);
+            }
+        }
+        toRemove = output;
+        clicked[element][0] = 0;
+        
+    }
+    
+}
+var toRemove = [];
+var clicked = {"wind":[0,0],"hydro":[0,1],"gas_ccgt":[0,2],"distillate":[0,3],"black_coal":[0,4],"exports":[0,5],"pumps":[0,6]};
+function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
+    for (i = 1;i<data.length+1;i++){
+        if (skippList.includes(i)){
+            continue;
+        }
+        if (data[i-1]>1|| data[i-1]<-1){
+            structure.rows[i].cells[cellIndex].innerText = startSign + Math.round(data[i-1])+endSign;
+        }
+        else if (data[i-1]===0){
+            structure.rows[i].cells[cellIndex].innerText = '-';
+        }
+        else{
+            structure.rows[i].cells[cellIndex].innerText = startSign+ Number(Math.round(data[i-1]+'e4')+'e-4')+endSign;
+        }
+    }
+}
+function getPercentageTotal(data){
+    var output = [0];
+    var totalScore = data[9];
+    for (i = 1;i<data.length;i++){
+        if (i != 6 && i!=9){
+            output.push(100*data[i]/data[9]);
+        }
+        else{
+            output.push(0)
+        }
+    }
+    return output;
+}
 function getTotalData(timeseries){
     var output = []
     var sumPositive = 0;
@@ -411,7 +473,24 @@ function getPieData(timeseries){
             output.push(pieData[i]);
         }
     }
-    return output.reverse();
+    output = output.reverse();
+    var finaloutput = [];
+    for (j = 0;j<output.length;j++){
+        if (toRemove.includes(j)==false){
+            finaloutput.push(output[j]);
+        }
+    }
+    return finaloutput;
+}
+function getPieColor(){
+    
+    output = [];
+    for (i = 0;i<colors.length;i++){
+        if (toRemove.includes(i)==false){
+            output.push(colors[i]);
+        }
+    }
+    return output;
 }
 function positivePower(xval,input,typeData){
     var data = [];
@@ -452,10 +531,10 @@ function computePowerData(activity){
         if (dataset.type == "power" && dataset.fuel_tech !== 'rooftop_solar'){
                 var xval = getXRange(dataset.history.interval,dataset.history.start, dataset.history.last);
                 if (dataset.fuel_tech == 'exports'|| dataset.fuel_tech == 'pumps'){
-                    data.unshift({name:dataset.fuel_tech,data:negativePower(xval,dataset.history.data,dataset.fuel_tech)});
+                    data.unshift({id:dataset.fuel_tech,name:dataset.fuel_tech,data:negativePower(xval,dataset.history.data,dataset.fuel_tech)});
                 }
                 else{
-                    data.push({name:dataset.fuel_tech, data:positivePower(xval,dataset.history.data,dataset.fuel_tech)})
+                    data.push({id:dataset.fuel_tech,name:dataset.fuel_tech, data:positivePower(xval,dataset.history.data,dataset.fuel_tech)})
                 }
             
         } 
@@ -465,11 +544,10 @@ function computePowerData(activity){
 function computePriceData(activity){
     var dataset = activity[8];
     dataset.x_axis = getXRange(dataset.history.interval, dataset.history.start, dataset.history.last);
-    var data = [];
     for (j = 0; j<dataset.x_axis.length;j++){
-        data.push([dataset.x_axis[j],dataset.history.data[j]]);
+        globalPrice.push([dataset.x_axis[j],dataset.history.data[j]]);
     }
-    return data;
+    return globalPrice;
 }
 function computeTemperatureData(activity){
     var dataset = activity[10];
@@ -481,7 +559,7 @@ function computeTemperatureData(activity){
     return data;
 }
 function computeToBarData(dataset){
-
+    var color = getPieColor();
     var output = [];
     for (i = 0;i<dataset.length;i++){
         output.push(dataset[i][1]);
@@ -489,7 +567,7 @@ function computeToBarData(dataset){
     var total = output.reduce((a,b)=>a+b);
     var finaloutput = [];
     for (j = 0;j<dataset.length;j++){
-        finaloutput.push(100*output[j]/total);
+        finaloutput.push({y:100*output[j]/total, color:color[j]});
     }
     return finaloutput;
 }
@@ -497,8 +575,8 @@ function getLabel(){
     var firstKey = globalData[Object.keys(globalData)[0]];
     var output = []
     for (i = 0; i<7;i++){
-        if (firstKey[i][0]!=='exports'&&firstKey[i][0] !== 'pumps'){
-            output.push(firstKey[i][0])
+        if (toRemove.includes(i)==false && firstKey[i][0]!=='exports'&&firstKey[i][0] !== 'pumps'){
+            output.push(firstKey[i][0]);
         }
     }
     return output.reverse();
@@ -512,8 +590,9 @@ Highcharts.ajax({
         var chartDiv = document.createElement('div');
         chartDiv.className = 'chart';
         document.getElementById('power').appendChild(chartDiv);
-        areaChart.series = computePowerData(activity);
-        Highcharts.chart(chartDiv, areaChart);
+        overalArea = computePowerData(activity);
+        areaChart.series = overalArea;
+        area = Highcharts.chart(chartDiv, areaChart);
 
         var chartDiv = document.createElement('div');
         chartDiv.className = 'chart';
@@ -527,9 +606,8 @@ Highcharts.ajax({
         tempChart.series = [{"data":computeTemperatureData(activity)}];
         Highcharts.chart(chartDiv,tempChart);
 
-
         pieChart = new Highcharts.chart('pieChart', {
-            colors: colors,
+            colors: getPieColor(),
             chart: {
                 type: 'pie',
             },
@@ -566,7 +644,7 @@ Highcharts.ajax({
         var piebutton = document.getElementById('piebutton');
         piebutton.style.backgroundColor = "#F5C9EF";
         barChart = new Highcharts.chart('barChart', {
-            colors: colors,
+            colors: getPieColor(),
             chart: {
                 type: 'bar',
                 animation: false,
@@ -579,9 +657,6 @@ Highcharts.ajax({
             },
             xAxis: {
                 categories: getLabel(),
-                title: {
-                    text: null
-                }
             },
             legend:{
                 enabled:false,
@@ -614,7 +689,7 @@ Highcharts.ajax({
             series: [{colorByPoint: true, type: 'bar', data:computeToBarData(getAveragePower())}]
         })
             
-            
+
     }
 });
 

@@ -33,31 +33,31 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th>Wind</th>
+                                <th class="button" id = "wind" onclick = "changeGraph(this.id)">Wind</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>   
                             <tr>
-                                <th>Hydro</th>
+                                <th class="button" id = "hydro" onclick = "changeGraph(this.id)">Hydro</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>  
                             <tr>
-                                <th>Gas (CCGT)</th>
+                                <th class="button" id = "gas_ccgt" onclick = "changeGraph(this.id)">Gas (CCGT)</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th>Distillate</th>
+                                <th class="button" id = "distillate" onclick = "changeGraph(this.id)">Distillate</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>   
                             <tr>
-                                <th>Black Coal</th>
+                                <th class="button" id = "black_coal" onclick = "changeGraph(this.id)">Black Coal</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -69,13 +69,13 @@
                                 <th></th>
                             </tr> 
                             <tr>
-                                <th>Exports</th>
+                                <th class="button" id = "exports" onclick = "changeGraph(this.id)">Exports</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                             </tr> 
                             <tr>
-                                <th>Pumps</th>
+                                <th class="button" id = "pumps" onclick = "changeGraph(this.id)">Pumps</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -96,8 +96,8 @@
                             <p id = "temperature"></p>
                         </div>
                     </td>
-                    <td>
-                        <div class="button" align = "center"> 
+                    <td rowspan = 2>
+                        <div class="button" align = "center" > 
                             <img class="button" id = "piebutton" onclick = "changeGraphPie()" src = "./assets/chart-pie-solid.svg">
                             <img class="button" id = "barbutton" onclick = "changeGraphBar()"data-rotate="90" src = "./assets/chart-bar-solid.svg">
                         </div>
