@@ -1,5 +1,16 @@
 body{
     background-color: "#ece9e6";
+    color: #333;
+}
+div.header{
+    font-size: 20px;
+    font-family: Playfair Display,Georgia,Times New Roman,Times,serif;
+    color: #333;
+}
+img.simpson{
+    width:40px;
+    height: 40px;
+    vertical-align:middle;
 }
 th.index{
     text-align: left;
@@ -9,6 +20,7 @@ th.index{
     float: left;
     width: 15px;
     height: 15px;
+    font-weight: normal;
 }
   
 .green {
@@ -37,23 +49,25 @@ th.index{
     background: #87CEFA;
 } 
 
+table{
+    font-size: 14px;
+    color: #333;
+}
 #inputTable th {
     border-bottom: 1px solid #ddd;
     text-align: left;
 }
-#inputTable td+td,
-#inputTable th+th {
+#inputTable td{
     border-bottom: 1px solid #ddd;
     text-align: right;
 }
-
-
 #button{
     width:30px;
     height:30px;
     display: block;
     margin: 0 auto;
 }
+
 img {
     max-width: 5%;
     height: auto;

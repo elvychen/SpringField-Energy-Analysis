@@ -9,7 +9,7 @@
         <div class="container">
             <!-------------------------------Header------------------------>
             <div class="header">
-                <p>SpringField</p>
+                <p><img class="simpson" src ="./assets/simpson.jpg"> <b>&nbsp Energy &nbsp &nbsp Springfield</b></p>
             </div>
             <!-- External Import begins-->  
             <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -17,80 +17,86 @@
             <!-- External Import ends-->  
             <table >
                 <tr>
-                    <td id = "power" width="80%" height="50%"></td>
-                    <td width="20%" >
+                    <td id = "power" width="90%"></td>
+                    <td width="10%" >
                         <table id = "inputTable" width="100%">
-                            <tr>
-                                <th class = "index"></th>
-                                <th><b>Power</b><br>MW</th>
-                                <th><b>Contribution</b><br>to demand</th>
-                                <th><b>Av.Value</b><br>$/MWh</th>
+                            <tr class="border_bottom">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td id = "time">20 Oct, 7:00AM - 27 Oct, 6:30 AM</td>
                             </tr>
                             <tr>
-                                <th class = "index">Sources</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th class = "index row"></th>
+                                <td class="row"><b>Power</b><br>GWh</td>
+                                <td class="row"><b>Contribution</b><br>to demand</td>
+                                <td class="row"><b>Av.Value</b><br>$/MWh</td>
                             </tr>
                             <tr>
-                                <th class="index" id = "wind" onclick = "changeGraph(this.id)"><div class="colors green"></div>&nbsp Wind</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th style = "text-align: left">Sources</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><div class="colors green"></div>&nbsp Wind</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>   
                             <tr>
-                                <th class="index" id = "hydro" onclick = "changeGraph(this.id)"> <div class="colors blue"></div>&nbsp Hydro</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "hydro" onclick = "changeGraph(this.id)"> <div class="colors blue"></div>&nbsp Hydro</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>  
                             <tr>
-                                <th class="index" id = "gas_ccgt" onclick = "changeGraph(this.id)"><div class="colors orange"></div>&nbsp Gas (CCGT)</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "gas_ccgt" onclick = "changeGraph(this.id)"><div class="colors orange"></div>&nbsp Gas (CCGT)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <th class="index" id = "distillate" onclick = "changeGraph(this.id)"><div class="colors red"></div>&nbsp Distillate</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "distillate" onclick = "changeGraph(this.id)"><div class="colors red"></div>&nbsp Distillate</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>   
                             <tr>
-                                <th class="index" id = "black_coal" onclick = "changeGraph(this.id)"><div class="colors black"></div>&nbsp Black Coal</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "black_coal" onclick = "changeGraph(this.id)"><div class="colors black"></div>&nbsp Black Coal</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                             <tr>
                                 <th class="index">Loads</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                             <tr>
-                                <th class="index" id = "exports" onclick = "changeGraph(this.id)"><div class="colors purple"></div>&nbsp Exports</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "exports" onclick = "changeGraph(this.id)"><div class="colors purple"></div>&nbsp Exports</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                             <tr>
-                                <th class="index" id = "pumps" onclick = "changeGraph(this.id)"><div class="colors lightblue"></div>&nbsp Pumps</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td style = "text-align: left" id = "pumps" onclick = "changeGraph(this.id)"><div class="colors lightblue"></div>&nbsp Pumps</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                             <tr>
                                 <th class = "index">Net</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                             <tr>
                                 <th class = "index">Renewables</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr> 
                         </table>
                     </td>

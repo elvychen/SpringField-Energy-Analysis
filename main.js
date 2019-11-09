@@ -19,10 +19,15 @@ mouse/touch event handler to bind the charts together.
                 point,
                 i,
                 event;
-
+            
             
             for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                
+
                 chart = Highcharts.charts[i];
+                if (con==='power' && chart.renderTo.id=='power'){
+                    continue;
+                }
                 // Find coordinates within the chart
                 event = chart.pointer.normalize(e);
                 // Get the hovered point
@@ -44,6 +49,7 @@ mouse/touch event handler to bind the charts together.
                         var percentage = getPercentageTotal(totalData);
                         fillTable(percentage,structure,2,'','%',[1,7,10]);
                         fillTable([globalPrice[point.index][1],0,0,0,0,0,0,0,0,0],structure,3,'$','',[7,10]);
+                        structure.rows[0].cells[3].innerText = current[0];
                     }
                 }
             }
@@ -61,7 +67,7 @@ Highcharts.Point.prototype.highlight = function (event) {
     this.series.chart.tooltip.refresh(this); // Show the tooltip
     this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
 };
-
+var current = [];
 
 /**
  * Synchronize zooming through the setExtremes event handler.
@@ -84,7 +90,7 @@ function syncExtremes(e) {
         });
     }
 }
-
+const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 var colors = ['#228B22','#1E90FF','#ffa07a','#ff0000','#000000','#9370DB','#87CEFA']
 Highcharts.setOptions({
@@ -102,7 +108,6 @@ let areaChart = {
             spacingTop: 20,
             spacingBottom: 20,
             type: 'area',
-            
         },
         title: {
             text: '<b>Generation</b> MW',
@@ -166,6 +171,7 @@ let areaChart = {
             }
         },
         tooltip: {
+            enabled: true,
             shared :false,
             useHTML: true,
             split: false,
@@ -177,7 +183,8 @@ let areaChart = {
                 };
             },
             formatter: function(){
-                var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+                var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
+                current = [time];
                 return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+this.series.name+this.y+' Total '+this.total+'MW';
             },
             borderWidth: 0,
@@ -231,6 +238,8 @@ let tempChart = {
             },
     },
     yAxis: {
+        min: 0,
+        max:90,
         title: {
             text: null
         }
@@ -243,7 +252,7 @@ let tempChart = {
             };
         },
         formatter: function(){
-            var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+            var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
             return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+
             '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
         },
@@ -298,6 +307,8 @@ let priceChart = {
         },
     },
     yAxis: {
+        min:-100,
+        max:300,
         title: {
             text: null
         }
@@ -310,7 +321,7 @@ let priceChart = {
             };
         },
         formatter: function(){
-            var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+            var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
             return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+
             '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
         },
@@ -363,13 +374,13 @@ function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
             continue;
         }
         if (data[i-1]>1|| data[i-1]<-1){
-            structure.rows[i].cells[cellIndex].innerText = startSign + Math.round(data[i-1])+endSign;
+            structure.rows[i+1].cells[cellIndex].innerText = startSign +Number(Math.round(data[i-1]+'e1')+'e-1')+endSign;
         }
         else if (data[i-1]===0){
-            structure.rows[i].cells[cellIndex].innerText = '-';
+            structure.rows[i+1].cells[cellIndex].innerText = '-';
         }
         else{
-            structure.rows[i].cells[cellIndex].innerText = startSign+ Number(Math.round(data[i-1]+'e4')+'e-4')+endSign;
+            structure.rows[i+1].cells[cellIndex].innerText = startSign+ Number(Math.round(data[i-1]+'e4')+'e-4')+endSign;
         }
     }
 }
@@ -590,24 +601,24 @@ Highcharts.ajax({
     success: function(activity){   
         activity = JSON.parse(activity);
 
-        var chartDiv = document.createElement('div');
-        chartDiv.className = 'chart';
-        document.getElementById('power').appendChild(chartDiv);
+        // var chartDiv = document.createElement('div');
+        // chartDiv.className = 'chart';
+        // document.getElementById('power').appendChild(chartDiv);
         overalArea = computePowerData(activity);
         areaChart.series = overalArea;
-        area = Highcharts.chart(chartDiv, areaChart);
+        area = Highcharts.chart('power', areaChart);
 
-        var chartDiv = document.createElement('div');
-        chartDiv.className = 'chart';
-        document.getElementById('price').appendChild(chartDiv);
+        // var chartDiv = document.createElement('div');
+        // chartDiv.className = 'chart';
+        // document.getElementById('price').appendChild(chartDiv);
         priceChart.series = [{"data":computePriceData(activity)}];
-        Highcharts.chart(chartDiv,priceChart);
+        Highcharts.chart('price',priceChart);
 
-        var chartDiv = document.createElement('div');
-        chartDiv.className = 'chart';
-        document.getElementById('temperature').appendChild(chartDiv);
+        // var chartDiv = document.createElement('div');
+        // chartDiv.className = 'chart';
+        // document.getElementById('temperature').appendChild(chartDiv);
         tempChart.series = [{"data":computeTemperatureData(activity)}];
-        Highcharts.chart(chartDiv,tempChart);
+        Highcharts.chart('temperature',tempChart);
 
         pieChart = new Highcharts.chart('pieChart', {
             colors: getPieColor(),
