@@ -21,21 +21,30 @@ mouse/touch event handler to bind the charts together.
                 event;
             
             
-            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
-                
 
+            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
                 chart = Highcharts.charts[i];
-                if (con==='power' && chart.renderTo.id=='power'){
-                    continue;
+                
+                if (chart.renderTo.id=='power'&& con==='power'){
+                        continue;
                 }
+
+                if (chart.renderTo.id != 'power'&&chart.renderTo.id != 'temperature'&&chart.renderTo.id == 'price'){
+                    chart.tooltip.hide(point);
+                    chart.xAxis[0].hideCrosshair(); 
+                }
+                renderID = chart.renderTo.id;
                 // Find coordinates within the chart
                 event = chart.pointer.normalize(e);
                 // Get the hovered point
                 point = chart.series[0].searchPoint(event, true);
 
                 if (point) {
+                    point.onMouseOver();
+                    chart.tooltip.refresh(point); // Show the tooltip
+                    chart.xAxis[0].drawCrosshair(event, point);
                     point.highlight(e);
-                    if (i === 1) {
+                    if (i != 0) {
                         var pieData = getPieData(point.x);
                         pieChart.options.colors = getPieColor();
                         var barData = computeToBarData(pieData);
@@ -50,6 +59,7 @@ mouse/touch event handler to bind the charts together.
                         fillTable(percentage,structure,2,'','%',[1,7,10]);
                         fillTable([globalPrice[point.index][1],0,0,0,0,0,0,0,0,0],structure,3,'$','',[7,10]);
                         structure.rows[0].cells[3].innerText = current[0];
+                        structure.rows[12].cells[2].innerText = Number(Math.round(percentage[1]+percentage[2]+'e1')+'e-1')+'%';
                     }
                 }
             }
@@ -58,6 +68,40 @@ mouse/touch event handler to bind the charts together.
         }
     );
 });
+
+
+['mouseleave'].forEach(function (eventType) {
+    ['power','temperature','price','pieChart','barChart'].forEach(function(con){
+        document.getElementById(con).addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event;
+            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                chart = Highcharts.charts[i];
+                if (chart){
+                    chart.pointer.reset();
+                    
+                    var pieData = getAveragePower();
+                    pieChart.options.colors = getPieColor();
+                    var barData = computeToBarData(pieData);
+                    pieChart.series[0].setData(pieData);
+                    pieChart.setTitle({'text':getCurrentTotal(getAveragePower())+'MW'});
+                    barChart.series[0].setData(barData);
+                    barChart.xAxis[0].update({'categories':getLabel()});
+                    var structure = document.getElementById('inputTable');
+                    fillTable(getAVValue(),structure,3,'$','',[7,10]);
+                    var sumMV = getContribution();
+                    fillTable(sumMV,structure,1,'','',[]);
+                    fillTable(getPercentageTotal(sumMV),structure,2,'','%',[1,7,10]);
+                    structure.rows[0].cells[3].innerText = '20 Oct, 7:00AM - 27 Oct, 6:30 AM';
+                }
+            }
+        }
+    )}
+)});
 
 /**
  * Highlight a point by showing tooltip, setting hover state and draw crosshair
@@ -101,6 +145,7 @@ Highcharts.setOptions({
 var globalData = {};
 var globalPrice = [];
 var overalArea = [];
+var renderID = [];
 let areaChart = {
     colors: colors,
         chart: {
@@ -167,7 +212,7 @@ let areaChart = {
                     inactive:{
                         opacity: 1
                     }
-                }
+                },               
             }
         },
         tooltip: {
@@ -183,14 +228,19 @@ let areaChart = {
                 };
             },
             formatter: function(){
-                var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
-                current = [time];
-                console.log(this.color);
-                return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div>'+this.series.name+' <b>'+this.y+'</b>'+' Total '+'<b>'+this.total+'</b>'+'MW';
+                if (renderID!=="power"){
+                    var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
+                    current = [time];
+                    return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div>'+this.series.name+' <b>'+this.y+'</b>'+' Total '+'<b>'+this.total+'</b>'+'MW';
+                }
+                else{
+                    var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
+                    current = [time];
+                    return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+' Total '+'<b>'+this.total+'</b>'+'MW';
+                }
             },
             borderWidth: 0,
             pointFormat: 'Total '+'{point.total}'+'MW',
-            // headerFormat: '<span style="background-color:#blue">{point.x:%e %b,%l:%M %p }</span>',
             shadow: false,
             style: {
                 fontSize: '14px',
@@ -374,7 +424,7 @@ function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
         if (skippList.includes(i)){
             continue;
         }
-        if (data[i-1]>1|| data[i-1]<-1){
+        if (data[i-1]>0.1|| data[i-1]<-0.1){
             structure.rows[i+1].cells[cellIndex].innerText = startSign +Number(Math.round(data[i-1]+'e1')+'e-1')+endSign;
         }
         else if (data[i-1]===0){
@@ -385,9 +435,29 @@ function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
         }
     }
 }
+
+function getContribution(){
+    var dataset = overalArea;
+    var ovalSum = 0;
+    var averageData = [];
+    for (i = 0;i<dataset.length;i++){
+        var currentPower = dataset[i]['data'];
+        var sumPrice = 0;
+        for(j = 0;j<currentPower.length;j++){
+            sumPrice += currentPower[j][1];
+        }
+        averageData.push(sumPrice/1000);
+        ovalSum += sumPrice/1000;
+    }
+
+    averageData.push(ovalSum);
+    averageData.unshift(ovalSum-averageData[5]-averageData[6]);
+    averageData.splice(6, 0, averageData[6]+averageData[7]);
+
+    return averageData; 
+}
 function getPercentageTotal(data){
     var output = [0];
-    var totalScore = data[9];
     for (i = 1;i<data.length;i++){
         if (i != 6 && i!=9){
             output.push(100*data[i]/data[9]);
@@ -471,6 +541,29 @@ function getAveragePower(){
         }
     }
     return output.reverse();
+}
+function getAVValue(){
+    var dataset = overalArea;
+    var ovalSum = 0;
+    var ovalQua = 0;
+    var averageData = [];
+    for (i = 0;i<dataset.length;i++){
+        var currentPower = dataset[i]['data'];
+        var sumPrice = 0;
+        var sumQuality = 0;
+        for(j = 0;j<currentPower.length;j++){
+            sumPrice += currentPower[j][1]*globalPrice[j][1];
+            sumQuality+=currentPower[j][1];
+        }
+        averageData.push(sumPrice/sumQuality);
+        ovalSum += sumPrice;
+        ovalQua += sumQuality;
+    }
+
+    averageData.unshift(ovalSum/ovalQua);
+    averageData.splice(6, 0, 0);
+
+    return averageData;
 }
 
 function getCurrentTotal(data){
@@ -601,25 +694,16 @@ Highcharts.ajax({
     dataType:'text',
     success: function(activity){   
         activity = JSON.parse(activity);
+        priceChart.series = [{"data":computePriceData(activity)}];
+        Highcharts.chart('price',priceChart);
 
-        // var chartDiv = document.createElement('div');
-        // chartDiv.className = 'chart';
-        // document.getElementById('power').appendChild(chartDiv);
         overalArea = computePowerData(activity);
         areaChart.series = overalArea;
         area = Highcharts.chart('power', areaChart);
 
-        // var chartDiv = document.createElement('div');
-        // chartDiv.className = 'chart';
-        // document.getElementById('price').appendChild(chartDiv);
-        priceChart.series = [{"data":computePriceData(activity)}];
-        Highcharts.chart('price',priceChart);
-
-        // var chartDiv = document.createElement('div');
-        // chartDiv.className = 'chart';
-        // document.getElementById('temperature').appendChild(chartDiv);
         tempChart.series = [{"data":computeTemperatureData(activity)}];
         Highcharts.chart('temperature',tempChart);
+
 
         pieChart = new Highcharts.chart('pieChart', {
             colors: getPieColor(),
