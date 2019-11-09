@@ -83,7 +83,6 @@ mouse/touch event handler to bind the charts together.
                 chart = Highcharts.charts[i];
                 if (chart){
                     chart.pointer.reset();
-                    
                     var pieData = getAveragePower();
                     pieChart.options.colors = getPieColor();
                     var barData = computeToBarData(pieData);
@@ -418,7 +417,7 @@ function changeGraph(element){
     
 }
 var toRemove = [];
-var clicked = {"wind":[0,0],"hydro":[0,1],"gas_ccgt":[0,2],"distillate":[0,3],"black_coal":[0,4],"exports":[0,5],"pumps":[0,6]};
+var clicked = {"wind":[0,0],"hydro":[0,1],"gas_ccgt":[0,2],"distillate":[0,3],"black_coal":[0,4],"exports":[0,6],"pumps":[0,5]};
 function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
     for (i = 1;i<data.length+1;i++){
         if (skippList.includes(i)){
@@ -442,18 +441,22 @@ function getContribution(){
     var averageData = [];
     for (i = 0;i<dataset.length;i++){
         var currentPower = dataset[i]['data'];
-        var sumPrice = 0;
-        for(j = 0;j<currentPower.length;j++){
-            sumPrice += currentPower[j][1];
+        if (toRemove.includes(i)==false){
+            var sumPrice = 0;
+            for(j = 0;j<currentPower.length;j++){
+                    sumPrice += currentPower[j][1];
+            }
+            averageData.push(sumPrice/1000);
+            ovalSum += sumPrice/1000;
+        }  
+        else{
+            averageData.push(0);
         }
-        averageData.push(sumPrice/1000);
-        ovalSum += sumPrice/1000;
     }
 
     averageData.push(ovalSum);
     averageData.unshift(ovalSum-averageData[5]-averageData[6]);
     averageData.splice(6, 0, averageData[6]+averageData[7]);
-
     return averageData; 
 }
 function getPercentageTotal(data){
@@ -473,7 +476,7 @@ function getTotalData(timeseries){
     var sumPositive = 0;
     var sumNegative = 0;
     var data = globalData[timeseries];
-    for(i =0;i<data.length;i++){
+    for(i =0;i<data.length;i++){           
         if (data[i][0]==='exports'||data[i][0]==='pumps'){
             output.unshift(data[i][1]);
             sumNegative+=data[i][1];
@@ -483,10 +486,23 @@ function getTotalData(timeseries){
             sumPositive+=data[i][1];
         }
     }
-    output.push(sumPositive);
-    output.unshift(sumNegative+sumPositive);
-    output.splice(3,0,sumNegative);
-    return output.reverse();
+    // output.push(sumPositive);
+    // output.unshift(sumNegative+sumPositive);
+    // output.splice(3,0,sumNegative);
+    output = output.reverse();
+    var final = [];
+    for (i = 0;i<output.length;i++){
+        if (toRemove.includes(i)){
+            final.push(0);
+        }
+        else{
+            final.push(output[i]);
+        }
+    }
+    final.unshift(sumPositive);
+    final.push(sumNegative+sumPositive);
+    final.splice(6,0,sumNegative);
+    return final;
 }
 function changeGraphPie() {
     var x = document.getElementById('pieChart');
@@ -536,11 +552,19 @@ function getAveragePower(){
     var output = [];
     var outputKey = Object.keys(sum);
     for(i = 0;i<outputKey.length;i++){
-        if (outputKey[i]!='exports' && outputKey[i]!='pumps'){
+        if (toRemove.includes(i)==false & outputKey[i]!='exports' && outputKey[i]!='pumps'){
             output.push([outputKey[i],sum[outputKey[i]]/keys.length]);
         }
     }
-    return output.reverse();
+    output = output.reverse()
+    var final =[];
+    for (j = 0;j<output.length;j++){
+        if (toRemove.includes(j)==false){
+            final.push(output[j]);
+        }
+    }
+
+    return final;
 }
 function getAVValue(){
     var dataset = overalArea;
