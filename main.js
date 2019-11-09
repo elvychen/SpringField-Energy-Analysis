@@ -35,7 +35,7 @@ mouse/touch event handler to bind the charts together.
 
                 if (point) {
                     point.highlight(e);
-                    if (i === 0) {
+                    if (i === 1) {
                         var pieData = getPieData(point.x);
                         pieChart.options.colors = getPieColor();
                         var barData = computeToBarData(pieData);
@@ -185,7 +185,8 @@ let areaChart = {
             formatter: function(){
                 var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
                 current = [time];
-                return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+this.series.name+this.y+' Total '+this.total+'MW';
+                console.log(this.color);
+                return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div>'+this.series.name+' <b>'+this.y+'</b>'+' Total '+'<b>'+this.total+'</b>'+'MW';
             },
             borderWidth: 0,
             pointFormat: 'Total '+'{point.total}'+'MW',
