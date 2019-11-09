@@ -178,7 +178,7 @@ let areaChart = {
             },
             formatter: function(){
                 var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
-                return '<span style=\"background-color:red;">'+time+'</span>'+this.series.name+this.y+' total: '+'MW';
+                return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+this.series.name+this.y+' Total '+this.total+'MW';
             },
             borderWidth: 0,
             pointFormat: 'Total '+'{point.total}'+'MW',
@@ -242,15 +242,17 @@ let tempChart = {
                 y: 0,
             };
         },
+        formatter: function(){
+            var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+            return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+
+            '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
+        },
         borderWidth: 0,
-        backgroundColor: 'none',
-        pointFormat: '{point.y}',
-        valuePrefix: '', 
-        valueSuffix: '°F',
+        useHTML: true,
         shadow: false,
         headerFormat: '',
         style: {
-            fontSize: '18px'
+            fontSize: '14px'
         }
     },
     series: [],
@@ -307,12 +309,13 @@ let priceChart = {
                 y: 0,
             };
         },
+        formatter: function(){
+            var time = Highcharts.dateFormat('%e %b,%l:%M %p',this.x);
+            return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+
+            '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
+        },
         borderWidth: 0,
-        backgroundColor: 'none',
-        pointFormat: '{point.y}',
-        valuePrefix: '$', 
-        valueSuffix: '',
-        headerFormat: '',
+        useHTML: true,
         shadow: false,
         style: {
             fontSize: '14px'
@@ -494,7 +497,7 @@ function getPieColor(){
 }
 function positivePower(xval,input,typeData){
     var data = [];
-    for (j = 0; j<xval.length;j++){
+    for (j = 0; j<xval.length-5;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
             data.push([xval[j],input[j]]);
             if (xval[j] in globalData == false){
@@ -513,7 +516,7 @@ function negativePower(xval,input,typeData){
         return element;
     })
     var data = [];
-    for (j = 0; j<xval.length;j++){
+    for (j = 0; j<xval.length-5;j++){
         if ((xval[j])%180000==0 && j%2 == 1){
             data.push([xval[j],input[j]]);
             if (xval[j] in globalData == false){
@@ -544,7 +547,7 @@ function computePowerData(activity){
 function computePriceData(activity){
     var dataset = activity[8];
     dataset.x_axis = getXRange(dataset.history.interval, dataset.history.start, dataset.history.last);
-    for (j = 0; j<dataset.x_axis.length;j++){
+    for (j = 1; j<dataset.x_axis.length;j++){
         globalPrice.push([dataset.x_axis[j],dataset.history.data[j]]);
     }
     return globalPrice;
@@ -553,7 +556,7 @@ function computeTemperatureData(activity){
     var dataset = activity[10];
     dataset.x_axis = getXRange(dataset.history.interval, dataset.history.start, dataset.history.last);
     var data = [];
-    for (j = 0; j<dataset.x_axis.length;j++){
+    for (j = 1; j<dataset.x_axis.length;j++){
         data.push([dataset.x_axis[j],dataset.history.data[j]]);
     }
     return data;

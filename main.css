@@ -1,6 +1,52 @@
 body{
     background-color: "#ece9e6";
 }
+th.index{
+    text-align: left;
+}
+
+.colors {
+    float: left;
+    width: 15px;
+    height: 15px;
+}
+  
+.green {
+    background: #228B22;
+}
+
+.blue{
+    background: #1E90FF;
+}
+
+.orange{
+    background: #ffa07a;
+}
+
+.red{
+    background: #ff0000;
+}
+
+.black{
+    background: #000000;
+}
+.purple{
+    background: #9370DB;
+}
+.lightblue{
+    background: #87CEFA;
+} 
+
+#inputTable th {
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+#inputTable td+td,
+#inputTable th+th {
+    border-bottom: 1px solid #ddd;
+    text-align: right;
+}
+
 
 #button{
     width:30px;
