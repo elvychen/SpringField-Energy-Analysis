@@ -16,13 +16,11 @@
             <script src="https://code.highcharts.com/modules/data.js"></script>
             <!-- External Import ends-->  
             <table style="table-layout: fixed;">
-                <col width="70%">
-                <col width="30%">
-                <row height="50%">
-                <row height="50%">
-                <tr height="50%">
-                    <td id = "power"  height="70%"></td>
-                    <td height="70%">
+                <col width="75%">
+                <col width="25%">
+                <tr>
+                    <td id = "power"  height="400"></td>
+                    <td >
                         <table id = "inputTable" width="100%">
                             <tr class="border_bottom">
                                 <td width="20%"></td>
@@ -105,16 +103,12 @@
                         </table>
                     </td>
                 </tr>
-                <tr height = "50%">
-                    <td> 
-                        <table style="table-layout: fixed;" width="100%">
-                                <tr id = "price"  height="50%" width="100%">
-                                </tr>
-                                <tr id = "temperature" height="50%" width="100%">
-                                </tr>
-                        </table>
+                <tr>
+                    <td style = "line-height: 200"> 
+                        <div id = "price" width="100%"></div>
+                        <div id = "temperature" width="100%"></div>
                     </td>
-                    <td rowspan = 2  height="15%">
+                    <td rowspan = 2>
                         <div class="button" align = "center" > 
                             <img class="button" id = "piebutton" onclick = "changeGraphPie()" src = "./assets/chart-pie-solid.svg">
                             <img class="button" id = "barbutton" onclick = "changeGraphBar()"data-rotate="90" src = "./assets/chart-bar-solid.svg">
