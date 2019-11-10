@@ -152,6 +152,7 @@ let areaChart = {
             spacingTop: 20,
             spacingBottom: 20,
             type: 'area',
+            backgroundColor: "#ece9e6",
         },
         title: {
             text: '<b>Generation</b> MW',
@@ -181,6 +182,9 @@ let areaChart = {
             events: {
                 setExtremes: syncExtremes
             },
+            gridLineDashStyle: 'longdash',
+            gridLineColor: "#D3D3D3",
+            gridLineWidth: 1,
         },
         yAxis: {
             startOnTick: true,
@@ -191,7 +195,8 @@ let areaChart = {
             title: {
                 text: null
             },
-            
+            gridLineDashStyle: 'longdash',
+            gridLineColor: "#D3D3D3",
         },
         plotOptions: {
             area: {
@@ -201,7 +206,8 @@ let areaChart = {
                 marker: {
                     lineWidth: 1,
                     lineColor: '#666666'
-                }
+                },
+                fillOpacity: 1,
             },
             series:{
                 states:{
@@ -256,7 +262,8 @@ let tempChart = {
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
-        spacingBottom: 20
+        spacingBottom: 20,
+        backgroundColor: "#ece9e6",
     },
     title: {
         text: "<b>Temperature</b> °F",
@@ -274,25 +281,30 @@ let tempChart = {
         enabled: false
     },
     xAxis: {
-            crosshair: {
-                color: 'red',
-                width: 1,
-            },
-            type:'datetime',
-            labels: {
-                format: '{value:%b%e}'
-            },
-            tickmarkPlacement:'on',
-            events: {
-                setExtremes: syncExtremes
-            },
+        crosshair: {
+            color: 'red',
+            width: 1,
+        },
+        type:'datetime',
+        labels: {
+            format: '{value:%b%e}'
+        },
+        tickmarkPlacement:'on',
+        events: {
+            setExtremes: syncExtremes
+        },
+        gridLineDashStyle: 'longdash',
+        gridLineColor: "#D3D3D3",
+        gridLineWidth: 1,
     },
     yAxis: {
         min: 0,
         max:90,
         title: {
             text: null
-        }
+        },
+        gridLineDashStyle: 'longdash',
+        gridLineColor: "#D3D3D3",
     },
     tooltip: {
         positioner: function () {
@@ -325,7 +337,8 @@ let priceChart = {
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
-        spacingBottom: 20
+        spacingBottom: 20,
+        backgroundColor: "#ece9e6",
     },
     title: {
         text: "<b>Price</b> $/MWh",
@@ -355,13 +368,18 @@ let priceChart = {
         events: {
             setExtremes: syncExtremes
         },
+        gridLineDashStyle: 'longdash',
+        gridLineColor: "#D3D3D3",
+        gridLineWidth: 1,
     },
     yAxis: {
         min:-100,
         max:300,
         title: {
             text: null
-        }
+        },
+        gridLineDashStyle: 'longdash',
+        gridLineColor: "#D3D3D3",
     },
     tooltip: {
         positioner: function () {
@@ -419,12 +437,16 @@ function changeGraph(element){
 var toRemove = [];
 var clicked = {"wind":[0,0],"hydro":[0,1],"gas_ccgt":[0,2],"distillate":[0,3],"black_coal":[0,4],"exports":[0,6],"pumps":[0,5]};
 function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
+    var des = 0;
+    if (cellIndex == 2){
+        des = 1;
+    }
     for (i = 1;i<data.length+1;i++){
         if (skippList.includes(i)){
             continue;
         }
         if (data[i-1]>0.1|| data[i-1]<-0.1){
-            structure.rows[i+1].cells[cellIndex].innerText = startSign +Number(Math.round(data[i-1]+'e1')+'e-1')+endSign;
+            structure.rows[i+1].cells[cellIndex].innerText = startSign +Number(Math.round(data[i-1]+'e'+des)+'e-'+des)+endSign;
         }
         else if (data[i-1]===0){
             structure.rows[i+1].cells[cellIndex].innerText = '-';
@@ -514,7 +536,7 @@ function changeGraphPie() {
     var piebutton = document.getElementById('piebutton');
     var barbutton = document.getElementById('barbutton');
     piebutton.style.backgroundColor = "#F5C9EF";
-    barbutton.style.backgroundColor = "#FFFFFF";
+    barbutton.style.backgroundColor = "#ece9e6";
 }
 function changeGraphBar() {
     var x = document.getElementById('pieChart');
@@ -525,7 +547,7 @@ function changeGraphBar() {
     x.style.display = "none";
     var piebutton = document.getElementById('piebutton');
     var barbutton = document.getElementById('barbutton');
-    piebutton.style.backgroundColor = "#FFFFFF";
+    piebutton.style.backgroundColor = "#ece9e6";
     barbutton.style.backgroundColor = "#F5C9EF";
   }
 
@@ -552,7 +574,7 @@ function getAveragePower(){
     var output = [];
     var outputKey = Object.keys(sum);
     for(i = 0;i<outputKey.length;i++){
-        if (toRemove.includes(i)==false & outputKey[i]!='exports' && outputKey[i]!='pumps'){
+        if (outputKey[i]!='exports' && outputKey[i]!='pumps'){
             output.push([outputKey[i],sum[outputKey[i]]/keys.length]);
         }
     }
@@ -707,11 +729,18 @@ function getLabel(){
     var firstKey = globalData[Object.keys(globalData)[0]];
     var output = []
     for (i = 0; i<7;i++){
-        if (toRemove.includes(i)==false && firstKey[i][0]!=='exports'&&firstKey[i][0] !== 'pumps'){
+        if (firstKey[i][0]!=='exports'&&firstKey[i][0] !== 'pumps'){
             output.push(firstKey[i][0]);
         }
     }
-    return output.reverse();
+    output = output.reverse();
+    var finaloutput = [];
+    for (i = 0;i<output.length;i++){
+        if (toRemove.includes(i)==false){
+            finaloutput.push(output[i])
+        }
+    }
+    return finaloutput;
 }
 Highcharts.ajax({
     url:'./springfield.json',
@@ -733,6 +762,7 @@ Highcharts.ajax({
             colors: getPieColor(),
             chart: {
                 type: 'pie',
+                backgroundColor:"#ece9e6"
             },
             title: {
                 text: 'Average <br/>' + getCurrentTotal(getAveragePower())+' MW',
@@ -771,6 +801,7 @@ Highcharts.ajax({
             chart: {
                 type: 'bar',
                 animation: false,
+                backgroundColor: "#ece9e6",
             },
             title: {
                 text: '',

@@ -15,16 +15,20 @@
             <script src="https://code.highcharts.com/highcharts.js"></script>
             <script src="https://code.highcharts.com/modules/data.js"></script>
             <!-- External Import ends-->  
-            <table >
-                <tr>
-                    <td id = "power" width="90%"></td>
-                    <td width="10%" >
+            <table style="table-layout: fixed;">
+                <col width="70%">
+                <col width="30%">
+                <row height="50%">
+                <row height="50%">
+                <tr height="50%">
+                    <td id = "power"  height="70%"></td>
+                    <td height="70%">
                         <table id = "inputTable" width="100%">
                             <tr class="border_bottom">
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td id = "time">20 Oct, 7:00AM - 27 Oct, 6:30 AM</td>
+                                <td width="20%"></td>
+                                <td width="20%"></td>
+                                <td width="20%"></td>
+                                <td width="40%"id = "time">20 Oct, 7:00AM - 27 Oct, 6:30 AM</td>
                             </tr>
                             <tr>
                                 <th class = "index row"></th>
@@ -39,31 +43,31 @@
                                 <td style = "font-weight: bold;"></td>
                             </tr>
                             <tr>
-                                <td style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><div class="colors green"></div>&nbsp Wind</td>
+                                <td style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><button class="colors green"></button>&nbsp Wind</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>   
                             <tr>
-                                <td style = "text-align: left" id = "hydro" onclick = "changeGraph(this.id)"> <div class="colors blue"></div>&nbsp Hydro</td>
+                                <td style = "text-align: left" id = "hydro" onclick = "changeGraph(this.id)"> <button class="colors blue"></button>&nbsp Hydro</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>  
                             <tr>
-                                <td style = "text-align: left" id = "gas_ccgt" onclick = "changeGraph(this.id)"><div class="colors orange"></div>&nbsp Gas (CCGT)</td>
+                                <td style = "text-align: left" id = "gas_ccgt" onclick = "changeGraph(this.id)"><button class="colors orange"></button>&nbsp Gas (CCGT)</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td style = "text-align: left" id = "distillate" onclick = "changeGraph(this.id)"><div class="colors red"></div>&nbsp Distillate</td>
+                                <td style = "text-align: left" id = "distillate" onclick = "changeGraph(this.id)"><button class="colors red"></button>&nbsp Distillate</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>   
                             <tr>
-                                <td style = "text-align: left" id = "black_coal" onclick = "changeGraph(this.id)"><div class="colors black"></div>&nbsp Black Coal</td>
+                                <td style = "text-align: left" id = "black_coal" onclick = "changeGraph(this.id)"><button class="colors black"></button>&nbsp Black Coal</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -75,24 +79,24 @@
                                 <td style = "font-weight: bold;"></td>
                             </tr> 
                             <tr>
-                                <td style = "text-align: left" id = "pumps" onclick = "changeGraph(this.id)"><div class="colors purple"></div>&nbsp Pumps</td>
+                                <td style = "text-align: left" id = "pumps" onclick = "changeGraph(this.id)"><button class="colors purple"></button>&nbsp Pumps</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr> 
                             <tr>
-                                <td style = "text-align: left" id = "exports" onclick = "changeGraph(this.id)"><div class="colors lightblue"></div>&nbsp Exports</td>
+                                <td style = "text-align: left" id = "exports" onclick = "changeGraph(this.id)"><button class="colors lightblue"></button>&nbsp Exports</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr> 
-                            <tr>
+                            <tr class = "border_bottom">
                                 <th class = "index">Net</th>
                                 <td style = "font-weight: bold;"></td>
                                 <td style = "font-weight: bold;"></td>
                                 <td style = "font-weight: bold;"></td>
                             </tr> 
-                            <tr>
+                            <tr class = "border_bottom">
                                 <th class = "index">Renewables</th>
                                 <td style = "font-weight: bold;"></td>
                                 <td style = "font-weight: bold;"></td>
@@ -101,14 +105,16 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
-                    <td height="50%">
-                        <div id = "tempprice" >
-                            <p id = "price"></p>
-                            <p id = "temperature"></p>
-                        </div>
+                <tr height = "50%">
+                    <td> 
+                        <table style="table-layout: fixed;" width="100%">
+                                <tr id = "price"  height="50%" width="100%">
+                                </tr>
+                                <tr id = "temperature" height="50%" width="100%">
+                                </tr>
+                        </table>
                     </td>
-                    <td rowspan = 2>
+                    <td rowspan = 2  height="15%">
                         <div class="button" align = "center" > 
                             <img class="button" id = "piebutton" onclick = "changeGraphPie()" src = "./assets/chart-pie-solid.svg">
                             <img class="button" id = "barbutton" onclick = "changeGraphBar()"data-rotate="90" src = "./assets/chart-bar-solid.svg">

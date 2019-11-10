@@ -1,5 +1,5 @@
 body{
-    background-color: "#ece9e6";
+    background-color: #ece9e6;
     color: #333;
 }
 div.header{
@@ -50,8 +50,11 @@ th.index{
 } 
 
 table{
-    font-size: 14px;
+    table-layout: fixed;
+    font-size: 16px;
     color: #333;
+    border-collapse: collapse;
+    margin:5px;
 }
 #inputTable th {
     border-bottom: 1px solid #ddd;
@@ -60,6 +63,9 @@ table{
 #inputTable td{
     border-bottom: 1px solid #ddd;
     text-align: right;
+}
+tr.border_bottom{
+    border-bottom: 2px solid black;
 }
 #button{
     width:30px;
