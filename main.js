@@ -135,7 +135,7 @@ function syncExtremes(e) {
 }
 const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-var colors = ['#228B22','#1E90FF','#ffa07a','#ff0000','#000000','#9370DB','#87CEFA']
+var colors = ['#437607','#4582B4','#FDB462','#F35020','#121212','#88AFD0','#977AB1']
 Highcharts.setOptions({
     global:{
         useUTC: false,
@@ -171,19 +171,21 @@ let areaChart = {
         },
         xAxis: {
             crosshair: {
-                color: 'red',
+                color: '#CA5131',
                 width: 1,
+                zIndex: 100,
             },
             type:'datetime',
             tickmarkPlacement:'on',
+            tickInterval: 3600*24*1000,
             labels: {
-                format: '{value:%b-%e}'
+                format: '{value: %a <br>%b-%e}'
             },
             events: {
                 setExtremes: syncExtremes
             },
             gridLineDashStyle: 'longdash',
-            gridLineColor: "#D3D3D3",
+            gridLineColor: "#DBDBDB",
             gridLineWidth: 1,
         },
         yAxis: {
@@ -196,7 +198,7 @@ let areaChart = {
                 text: null
             },
             gridLineDashStyle: 'longdash',
-            gridLineColor: "#D3D3D3",
+            gridLineColor: "#DBDBDB",
         },
         plotOptions: {
             area: {
@@ -207,7 +209,7 @@ let areaChart = {
                     lineWidth: 1,
                     lineColor: '#666666'
                 },
-                fillOpacity: 1,
+                fillOpacity:1
             },
             series:{
                 states:{
@@ -236,7 +238,7 @@ let areaChart = {
                 if (renderID!=="power"){
                     var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
                     current = [time];
-                    return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div>'+this.series.name+' <b>'+this.y+'</b>'+' Total '+'<b>'+this.total+'</b>'+'MW';
+                    return '<span style=\"background-color:#F5C9EF;">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div> '+this.series.name+' <b>'+this.y+' MW </b>'+'&nbsp&nbsp Total '+'<b>'+this.total+'</b>'+'MW';
                 }
                 else{
                     var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
@@ -256,9 +258,6 @@ let areaChart = {
 
 let tempChart = {
     colors: ['red'],
-    exporting:{
-        enabled:false,
-    },
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
@@ -282,19 +281,20 @@ let tempChart = {
     },
     xAxis: {
         crosshair: {
-            color: 'red',
+            color: '#CA5131',
             width: 1,
         },
         type:'datetime',
+        tickInterval: 3600*24*1000,
+        tickLength: 0,
         labels: {
-            format: '{value:%b%e}'
+            enabled:false,
         },
-        tickmarkPlacement:'on',
         events: {
             setExtremes: syncExtremes
         },
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#D3D3D3",
+        gridLineColor: "#DBDBDB",
         gridLineWidth: 1,
     },
     yAxis: {
@@ -303,8 +303,9 @@ let tempChart = {
         title: {
             text: null
         },
+        tickAmount: 6,
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#D3D3D3",
+        gridLineColor: "#DBDBDB",
     },
     tooltip: {
         positioner: function () {
@@ -315,7 +316,7 @@ let tempChart = {
         },
         formatter: function(){
             var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
-            return '<span style=\"background-color:#F5C9EF;">'+time+'</span>'+
+            return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span>'+
             '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
         },
         borderWidth: 0,
@@ -331,9 +332,6 @@ let tempChart = {
 
 let priceChart = {
     colors: ['red'],
-    exporting:{
-        enabled:false,
-    },
     chart: {
         marginLeft: 40, 
         spacingTop: 20,
@@ -357,19 +355,21 @@ let priceChart = {
     },
     xAxis: {
         crosshair: {
-            color: 'red',
+            color: '#CA5131',
             width: 1,
         },
+        tickInterval: 3600*24*1000,
+        tickLength: 0,
         type:'datetime',
         labels: {
-            format: '{value:%b-%e}'
+            enabled:false,
         },
         tickmarkPlacement:'on',
         events: {
             setExtremes: syncExtremes
         },
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#D3D3D3",
+        gridLineColor: "#DBDBDB",
         gridLineWidth: 1,
     },
     yAxis: {
@@ -379,7 +379,7 @@ let priceChart = {
             text: null
         },
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#D3D3D3",
+        gridLineColor: "#DBDBDB",
     },
     tooltip: {
         positioner: function () {
@@ -780,7 +780,7 @@ Highcharts.ajax({
                     allowPointSelect: true,
                     cursor: 'pointer',
                     dataLabels: {
-                        enabled: true,
+                        enabled: false,
                         format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                     }, 
                 },

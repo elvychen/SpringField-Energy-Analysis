@@ -19,102 +19,107 @@
                 <col width="75%">
                 <col width="25%">
                 <tr>
-                    <td id = "power"  height="400"></td>
-                    <td >
+                    <td id = "power" class = "left_top"></td>
+                    <td class = "right_top">
+                        <p></p>
                         <table id = "inputTable" width="100%">
                             <tr class="border_bottom">
                                 <td width="20%"></td>
                                 <td width="20%"></td>
                                 <td width="20%"></td>
-                                <td width="40%"id = "time">20 Oct, 7:00AM - 27 Oct, 6:30 AM</td>
+                                <td width="40%"id = "time" style = "text-align: right" >20 Oct, 7:00AM - 27 Oct, 6:30 AM</td>
                             </tr>
                             <tr>
-                                <th class = "index row"></th>
-                                <td class="row"><b>Power</b><br>GWh</td>
-                                <td class="row"><b>Contribution</b><br>to demand</td>
-                                <td class="row"><b>Av.Value</b><br>$/MWh</td>
+                                <th class = "regular_row"></th>
+                                <td class="regular_row"><b>Power</b><br>GWh</td>
+                                <td class="regular_row"><b>Contribution</b><br>to demand</td>
+                                <td class="regular_row"><b>Av.Value</b><br>$/MWh</td>
                             </tr>
                             <tr>
-                                <th style = "text-align: left">Sources</th>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
+                                <th class="regular_row" style = "text-align: left">Sources</th>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
                             </tr>
                             <tr>
-                                <td style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><button class="colors green"></button>&nbsp Wind</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><button class="colors green"></button>&nbspWind</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr>   
                             <tr>
-                                <td style = "text-align: left" id = "hydro" onclick = "changeGraph(this.id)"> <button class="colors blue"></button>&nbsp Hydro</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "hydro" onclick = "changeGraph(this.id)"> <button class="colors blue"></button>&nbspHydro</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr>  
                             <tr>
-                                <td style = "text-align: left" id = "gas_ccgt" onclick = "changeGraph(this.id)"><button class="colors orange"></button>&nbsp Gas (CCGT)</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "gas_ccgt" onclick = "changeGraph(this.id)"><button class="colors orange"></button>&nbspGas (CCGT)</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr>
                             <tr>
-                                <td style = "text-align: left" id = "distillate" onclick = "changeGraph(this.id)"><button class="colors red"></button>&nbsp Distillate</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "distillate" onclick = "changeGraph(this.id)"><button class="colors red"></button>&nbspDistillate</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr>   
                             <tr>
-                                <td style = "text-align: left" id = "black_coal" onclick = "changeGraph(this.id)"><button class="colors black"></button>&nbsp Black Coal</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "black_coal" onclick = "changeGraph(this.id)"><button class="colors black"></button>&nbspBlack Coal</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr> 
                             <tr>
-                                <th class="index">Loads</th>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
+                                <th class="index regular_row">Loads</th>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
+                                <td class="regular_row" style = "font-weight: bold;"></td>
                             </tr> 
                             <tr>
-                                <td style = "text-align: left" id = "pumps" onclick = "changeGraph(this.id)"><button class="colors purple"></button>&nbsp Pumps</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "pumps" onclick = "changeGraph(this.id)"><button class="colors lightblue"></button>&nbspPumps</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr> 
                             <tr>
-                                <td style = "text-align: left" id = "exports" onclick = "changeGraph(this.id)"><button class="colors lightblue"></button>&nbsp Exports</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="regular_row" style = "text-align: left" id = "exports" onclick = "changeGraph(this.id)"><button class="colors purple"></button>&nbspExports</td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
+                                <td class="regular_row"></td>
                             </tr> 
                             <tr class = "border_bottom">
-                                <th class = "index">Net</th>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
+                                <th style = "text-align: left">Net</th>
+                                <td style = "font-weight: bold;text-align: right;"></td>
+                                <td style = "font-weight: bold;text-align: right;"></td>
+                                <td style = "font-weight: bold;text-align: right;"></td>
                             </tr> 
                             <tr class = "border_bottom">
-                                <th class = "index">Renewables</th>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
-                                <td style = "font-weight: bold;"></td>
+                                <th style = "text-align: left">Renewables</th>
+                                <td style = "font-weight: bold;text-align: right;"></td>
+                                <td style = "font-weight: bold;text-align: right;"></td>
+                                <td style = "font-weight: bold;text-align: right;"></td>
                             </tr> 
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td style = "line-height: 200"> 
-                        <div id = "price" width="100%"></div>
-                        <div id = "temperature" width="100%"></div>
+                    <td class = "left_bottom"> 
+                        <div height="100%">
+                            <p id = "price" class = "left_bottom up"></p>
+                            <p id = "temperature" class = "left_bottom down"></p>
+                        </div>
+
                     </td>
-                    <td rowspan = 2>
+                    <td class="right_bottom"> 
                         <div class="button" align = "center" > 
                             <img class="button" id = "piebutton" onclick = "changeGraphPie()" src = "./assets/chart-pie-solid.svg">
                             <img class="button" id = "barbutton" onclick = "changeGraphBar()"data-rotate="90" src = "./assets/chart-bar-solid.svg">
+                            <div id="pieChart"></div>
+                            <div id="barChart"></div>
                         </div>
-                            <p id="pieChart"></p>
-                            <p id="barChart"></p>
+                           
                     </td>
                 </tr>
             </table>
