@@ -14,16 +14,17 @@
             <!-- External Import begins-->  
             <script src = "./assets/highchart.js"></script>
             <script src = "./assets/data.js"></script>
+            <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif&display=swap" rel="stylesheet">
             <!-- External Import ends-->  
             <table style="table-layout: fixed;">
                 <tr>
                     <td id = "power" class = "left_top"></td>
                     <td class = "right_top">
-                        <p id = "time" style = "text-align: right;font-family:IBM Plex Serif,Georgia,Times New Roman,Times,serif;font-size:20px;" >20 Oct, 7:00AM - 27 Oct, 6:30 AM</p>
+                        <p id = "time" style = "text-align: right;font-family: 'IBM Plex Serif',Georgia,Times New Roman,Times,serif;font-size:20px;" >20 Oct, 7:00AM - 27 Oct, 6:30 AM</p>
                         <table id = "inputTable" width="100%" style = "table-layout: fixed; color: #333;">
                             <tr class = "border_top">
                                 <th></th>
-                                <td style = "text-align: right"><b>Power</b><br>GWh</td>
+                                <td style = "text-align: right"><b>Energy</b><br>GWh</td>
                                 <td style = "text-align: right"><b>Contribution</b><br>to demand</td>
                                 <td style = "text-align: right"><b>Av.Value</b><br>$/MWh</td>
                             </tr>
@@ -34,7 +35,7 @@
                                 <td class="regular_row" style = "font-weight: bold;"></td>
                             </tr>
                             <tr>
-                                <td class="regular_row" style = "text-align: left" id = "wind" onclick = "changeGraph(this.id)"><button class="colors green"></button>&nbspWind</td>
+                                <td class="regular_row" style = "text-align: left;" id = "wind" onclick = "changeGraph(this.id)"><button class="colors green"></button>&nbspWind</td>
                                 <td class="regular_row"></td>
                                 <td class="regular_row"></td>
                                 <td class="regular_row"></td>
@@ -99,9 +100,9 @@
                 <tr>
                     <td class = "left_bottom"> 
                         <div height="100%"> 
-                            <p><img  class = "collapsible" id = "arrowP" src = "./assets/arrow.svg" onclick = "openPrice()"> <b>Price</b> $/MWh</p>
+                            <p class='title'><img  class = "collapsible" id = "arrowP" src = "./assets/arrow.svg" onclick = "openPrice()"> <b>Price</b> $/MWh</p>
                             <p id = "price" class = "left_bottom up"></p>
-                            <p><img  class = "collapsible" id = "arrowT" src = "./assets/arrow.svg" onclick = "openTemp()"> <b>Temperature</b> °F</p>
+                            <p class = 'title'><img  class = "collapsible" id = "arrowT" src = "./assets/arrow.svg" onclick = "openTemp()"> <b>Temperature</b> °F</p>
                             <p id = "temperature" class = "left_bottom down"></p>
                         </div>
 

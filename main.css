@@ -96,6 +96,9 @@ tr.border_top{
     border-top: 2px solid black;
     border-bottom: 1px solid #ddd;
 }
+table.inputTable{
+    font-family : "IBM Plex Serif",Georgia,Times New Roman,Times,serif;
+}
 table{
     table-layout: fixed;
     font-size: 16px;
@@ -141,3 +144,6 @@ img.collapsible {
     transform: rotate(180deg)
   }
   
+p.title{
+    font-family: Playfair Display,Georgia,Times New Roman,Times,serif;
+}

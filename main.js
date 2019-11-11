@@ -49,7 +49,7 @@ mouse/touch event handler to bind the charts together.
                         pieChart.options.colors = getPieColor();
                         var barData = computeToBarData(pieData);
                         pieChart.series[0].setData(pieData);
-                        pieChart.setTitle({'text':getCurrentTotal(pieData)+'MW'});
+                        pieChart.setTitle({'text':getCurrentTotal(pieData)+' MW'});
                         barChart.series[0].setData(barData);
                         barChart.xAxis[0].update({'categories':getLabel()});
                         var structure = document.getElementById('inputTable');
@@ -89,7 +89,7 @@ mouse/touch event handler to bind the charts together.
                     pieChart.options.colors = getPieColor();
                     var barData = computeToBarData(pieData);
                     pieChart.series[0].setData(pieData);
-                    pieChart.setTitle({'text':"Average</br>"+getCurrentTotal(getAveragePower())+'MW'});
+                    pieChart.setTitle({'text':"Average<br>"+getCurrentTotal(getAveragePower())+'MW'});
                     barChart.series[0].setData(barData);
                     barChart.xAxis[0].update({'categories':getLabel()});
                     var structure = document.getElementById('inputTable');
@@ -98,7 +98,7 @@ mouse/touch event handler to bind the charts together.
                     fillTable(sumMV,structure,1,'','',[]);
                     var percentage = getPercentageTotal(sumMV);
                     fillTable(percentage,structure,2,'','%',[0,7,10]);
-                    structure.rows[0].cells[1].innerHTML = "<b>Power</b><br>GWh"
+                    structure.rows[0].cells[1].innerHTML = "<b>Energy</b><br>GWh"
                     var time = document.getElementById('time');
                     structure.rows[11].cells[2].innerText = Number(Math.round(percentage[1]+percentage[2]+'e1')+'e-1')+'%';
                     time.innerText = '20 Oct, 7:00AM - 27 Oct, 6:30 AM';
@@ -146,6 +146,9 @@ Highcharts.setOptions({
     global:{
         useUTC: false,
     },
+    lang: {
+        thousandsSep: ','
+    }
 })
 var globalData = {};
 var globalPrice = [];
@@ -159,6 +162,10 @@ let areaChart = {
             spacingBottom: 20,
             type: 'area',
             backgroundColor: "#ece9e6",
+            style:{
+                fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+                color: "#333",
+            }
         },
         title: {
             text: '<b>Generation</b> MW',
@@ -167,7 +174,7 @@ let areaChart = {
             x: 30,
             style:{
                 fontSize: '16px',
-                fontFamily:"Times New Roman",
+                fontFamily:"Playfair Display,Georgia,Times New Roman,Times,serif",
             }
         },
         credits: {
@@ -186,7 +193,7 @@ let areaChart = {
             tickmarkPlacement:'on',
             tickInterval: 3600*24*1000,
             labels: {
-                format: '{value: %a <br>%b-%e}'
+                format: '{value: %a <br>%e %b}'
             },
             events: {
                 setExtremes: syncExtremes
@@ -287,16 +294,18 @@ let areaChart = {
                 if (renderID!=="power"){
                     var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
                     current = [time];
-                    return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div> '+this.series.name+' <b>'+this.y+' MW </b>'+'&nbsp&nbsp Total '+'<b>'+this.total+'</b>'+'MW';
+                    var y_data = Highcharts.numberFormat(this.y,0);
+                    var total = Highcharts.numberFormat(this.total,0);
+                    return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span> '+'<div style=\"display:inline-block;width:15px;height:15px;background:'+this.color+';\"></div> '+this.series.name+' <b>'+y_data+' MW </b>'+'&nbsp&nbsp Total '+'<b>'+total+'</b>'+'MW';
                 }
                 else{
                     var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
                     current = [time];
-                    return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span> '+' Total '+'<b>'+this.total+'</b>'+'MW';
+                    var total = Highcharts.numberFormat(this.total,0);
+                    return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span> '+' Total '+'<b>'+total+'</b>'+'MW';
                 }
             },
             borderWidth: 0,
-            pointFormat: 'Total '+'{point.total}'+'MW',
             shadow: false,
             style: {
                 fontSize: '14px',
@@ -312,6 +321,10 @@ let tempChart = {
         spacingTop: 20,
         spacingBottom: 20,
         backgroundColor: "#ece9e6",
+        style:{
+            fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+            color: "#333",
+        }
     },
     title: {
         text: "",
@@ -408,7 +421,7 @@ let tempChart = {
         formatter: function(){
             var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
             return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span>'+
-            '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
+            '<span> Av '+this.y+'°F</span>';
         },
         borderWidth: 0,
         useHTML: true,
@@ -428,6 +441,10 @@ let priceChart = {
         spacingTop: 20,
         spacingBottom: 20,
         backgroundColor: "#ece9e6",
+        style:{
+            fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+            color: "#333",
+        }
     },
     title: {
         text: "",
@@ -526,7 +543,7 @@ let priceChart = {
         formatter: function(){
             var time = Highcharts.dateFormat('%e %b, %l:%M %p',this.x);
             return '<span style=\"background-color:rgb(199, 69, 35,0.3);">'+time+'</span>'+
-            '<span style=\"background-color:white;">'+' $'+this.y+'</span>';
+            '<span>'+' $'+this.y+'</span>';
         },
         borderWidth: 0,
         useHTML: true,
@@ -581,7 +598,8 @@ function fillTable(data,structure,cellIndex,startSign, endSign,skippList){
             continue;
         }
         if (data[i-1]>0.1|| data[i-1]<-0.1){
-            structure.rows[i].cells[cellIndex].innerText = startSign +Number(Math.round(data[i-1]+'e'+des)+'e-'+des)+endSign;
+            var num = Number(Math.round(data[i-1]+'e'+des)+'e-'+des);
+            structure.rows[i].cells[cellIndex].innerText = startSign +num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+endSign;
         }
         else if (data[i-1]===0){
             structure.rows[i].cells[cellIndex].innerText = '-';
@@ -643,9 +661,6 @@ function getTotalData(timeseries){
             sumPositive+=data[i][1];
         }
     }
-    // output.push(sumPositive);
-    // output.unshift(sumNegative+sumPositive);
-    // output.splice(3,0,sumNegative);
     output = output.reverse();
     var final = [];
     for (i = 0;i<output.length;i++){
@@ -777,7 +792,8 @@ function getCurrentTotal(data){
     for(i = 0;i<data.length;i++){
         sum += data[i][1];
     }
-    return sum.toFixed(2);
+    var num = sum.toFixed(2)
+    return  num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 function getPieData(timeseries){
     var output = []
@@ -922,10 +938,14 @@ Highcharts.ajax({
             colors: getPieColor(),
             chart: {
                 type: 'pie',
-                backgroundColor:"#ece9e6"
+                backgroundColor:"#ece9e6",
+                style:{
+                    fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+                    color: "#333",
+                }
             },
             title: {
-                text: 'Average <br/>' + getCurrentTotal(getAveragePower())+' MW',
+                text: 'Average <br>' + getCurrentTotal(getAveragePower())+' MW',
                 verticalAlign: 'middle',
                 floating: true,
             },
@@ -941,7 +961,6 @@ Highcharts.ajax({
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: false,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                     }, 
                 },
                 
@@ -963,6 +982,10 @@ Highcharts.ajax({
                 type: 'bar',
                 animation: false,
                 backgroundColor: "#ece9e6",
+                style:{
+                    fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+                    color: "#333",
+                }
             },
             title: {
                 text: '',
@@ -972,6 +995,11 @@ Highcharts.ajax({
             },
             xAxis: {
                 categories: getLabel(),
+                style:{
+                    fontWeighted:'bold',
+                    fontFamily:"'IBM Plex Serif',Georgia,Times New Roman,Times,serif",
+                    color: "#333",
+                }
             },
             legend:{
                 enabled:false,
