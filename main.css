@@ -15,13 +15,13 @@ img.simpson{
 
 .left_top{
     float:left;
-    width: 65vw;
+    width: 60vw;
     height: 400px;
 }
 
 .left_bottom {
     float: left;
-    width: 65vw;
+    width: 60vw;
     height: 400px;
     clear:none;
 }
@@ -38,18 +38,17 @@ img.simpson{
 }
 .right_top {
     float: left;
-    width: 32vw;
+    width: 35vw;
     padding: 1px;
     height: 400px;
 }
 
 .right_bottom {
     float: left ;
-    width: 32vw;
+    width: 35vw;
     padding: 1px;
     height: 350px;
 }
-
 
 th.index{
     text-align: left;
@@ -91,6 +90,10 @@ th.index{
 tr.border_bottom{
     border-bottom: 2px solid black;
 }
+tr.border_top{
+    border-top: 2px solid black;
+    border-bottom: 1px solid #ddd;
+}
 table{
     table-layout: fixed;
     font-size: 16px;
@@ -106,7 +109,6 @@ td.regular_row{
     border-bottom: 1px solid #ddd;
     text-align: right;
 }
-
 
 #button{
     width:30px;
