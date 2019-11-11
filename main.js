@@ -192,8 +192,50 @@ let areaChart = {
                 setExtremes: syncExtremes
             },
             gridLineDashStyle: 'longdash',
-            gridLineColor: "#DBDBDB",
             gridLineWidth: 1,
+            gridLineColor:"#D3D3D3",
+            plotBands: [{
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1571616000000+25200000,
+                to: 1571659200000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1571702400000+25200000,
+                to: 1571745600000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1571788800000+25200000,
+                to: 1571832000000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1571875200000+25200000,
+                to: 1571918400000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1571961600000+25200000,
+                to: 1572004800000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1572048000000+25200000,
+                to: 1572091200000+25200000,
+            },
+            {
+                color: '#E4E1DF',
+                opacity: 0.2,
+                from: 1572134400000+25200000,
+                to: 1572177600000+25200000,
+            }],
         },
         yAxis: {
             startOnTick: true,
@@ -205,7 +247,7 @@ let areaChart = {
                 text: null
             },
             gridLineDashStyle: 'longdash',
-            gridLineColor: "#DBDBDB",
+            gridLineColor: "#D3D3D3",
         },
         plotOptions: {
             area: {
@@ -301,8 +343,50 @@ let tempChart = {
             setExtremes: syncExtremes
         },
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#DBDBDB",
+        gridLineColor: "#D3D3D3",
         gridLineWidth: 1,
+        plotBands: [{
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571616000000+25200000,
+            to: 1571659200000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571702400000+25200000,
+            to: 1571745600000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571788800000+25200000,
+            to: 1571832000000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571875200000+25200000,
+            to: 1571918400000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571961600000+25200000,
+            to: 1572004800000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1572048000000+25200000,
+            to: 1572091200000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1572134400000+25200000,
+            to: 1572177600000+25200000,
+        }],
     },
     yAxis: {
         min: 0,
@@ -312,7 +396,7 @@ let tempChart = {
         },
         tickAmount: 6,
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#DBDBDB",
+        gridLineColor: "#D3D3D3",
     },
     tooltip: {
         positioner: function () {
@@ -376,8 +460,51 @@ let priceChart = {
             setExtremes: syncExtremes
         },
         gridLineDashStyle: 'longdash',
-        gridLineColor: "#DBDBDB",
+        gridLineColor: "#D3D3D3",
         gridLineWidth: 1,
+        zIndex:8,
+        plotBands: [{
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571616000000+25200000,
+            to: 1571659200000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571702400000+25200000,
+            to: 1571745600000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571788800000+25200000,
+            to: 1571832000000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571875200000+25200000,
+            to: 1571918400000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1571961600000+25200000,
+            to: 1572004800000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1572048000000+25200000,
+            to: 1572091200000+25200000,
+        },
+        {
+            color: '#E4E1DF',
+            opacity: 0.2,
+            from: 1572134400000+25200000,
+            to: 1572177600000+25200000,
+        }],
     },
     yAxis: {
         min:-100,
@@ -387,6 +514,7 @@ let priceChart = {
         },
         gridLineDashStyle: 'longdash',
         gridLineColor: "#DBDBDB",
+        zIndex:8,
     },
     tooltip: {
         positioner: function () {
@@ -775,7 +903,7 @@ function getLabel(){
     return finaloutput;
 }
 Highcharts.ajax({
-    url:'./springfield_converted_json.js',
+    url:'./assets/springfield_converted_json.js',
     dataType:'text',
     success: function(activity){   
         activity = JSON.parse(activity);
