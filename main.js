@@ -89,16 +89,18 @@ mouse/touch event handler to bind the charts together.
                     pieChart.options.colors = getPieColor();
                     var barData = computeToBarData(pieData);
                     pieChart.series[0].setData(pieData);
-                    pieChart.setTitle({'text':getCurrentTotal(getAveragePower())+'MW'});
+                    pieChart.setTitle({'text':"Average</br>"+getCurrentTotal(getAveragePower())+'MW'});
                     barChart.series[0].setData(barData);
                     barChart.xAxis[0].update({'categories':getLabel()});
                     var structure = document.getElementById('inputTable');
                     fillTable(getAVValue(),structure,3,'$','',[7,10]);
                     var sumMV = getContribution();
                     fillTable(sumMV,structure,1,'','',[]);
-                    fillTable(getPercentageTotal(sumMV),structure,2,'','%',[0,7,10]);
+                    var percentage = getPercentageTotal(sumMV);
+                    fillTable(percentage,structure,2,'','%',[0,7,10]);
                     structure.rows[0].cells[1].innerHTML = "<b>Power</b><br>GWh"
                     var time = document.getElementById('time');
+                    structure.rows[11].cells[2].innerText = Number(Math.round(percentage[1]+percentage[2]+'e1')+'e-1')+'%';
                     time.innerText = '20 Oct, 7:00AM - 27 Oct, 6:30 AM';
                 }
             }
@@ -165,6 +167,7 @@ let areaChart = {
             x: 30,
             style:{
                 fontSize: '16px',
+                fontFamily:"Times New Roman",
             }
         },
         credits: {
@@ -269,7 +272,7 @@ let tempChart = {
         backgroundColor: "#ece9e6",
     },
     title: {
-        text: "<b>Temperature</b> °F",
+        text: "",
         align: 'left',
         margin: 0,
         x: 30,
@@ -343,7 +346,7 @@ let priceChart = {
         backgroundColor: "#ece9e6",
     },
     title: {
-        text: "<b>Price</b> $/MWh",
+        text: "",
         align: 'left',
         margin: 0,
         x: 30,
@@ -554,6 +557,32 @@ function changeGraphBar() {
     piebutton.style.backgroundColor = "#ffffff";
     barbutton.style.backgroundColor = "#C74523";
   }
+function openPrice(){
+    var chart = document.getElementById("price");
+    var arrow = document.getElementById("arrowP");
+    if (chart.style.display == "none"){
+        chart.style.display = "block";
+        arrow.style.transform = "rotate(180deg)";
+    }
+    else{
+        chart.style.display = "none";
+        arrow.style.transform = "rotate(90deg)";
+
+    }
+}
+function openTemp(){
+    var chart = document.getElementById("temperature");
+    var arrow = document.getElementById("arrowT");
+    if (chart.style.display == "none"){
+        chart.style.display = "block";
+        arrow.style.transform = "rotate(180deg)";
+    }
+    else{
+        chart.style.display = "none";
+        arrow.style.transform = "rotate(90deg)";
+
+    }
+}
 
 function getXRange(interval, start, end){
     interval = interval.substring(0,interval.length-1)*60;
@@ -612,7 +641,6 @@ function getAVValue(){
 
     averageData.unshift(ovalSum/ovalQua);
     averageData.splice(6, 0, 0);
-    console.log(averageData);
     return averageData;
 }
 
@@ -626,7 +654,7 @@ function getCurrentTotal(data){
 function getPieData(timeseries){
     var output = []
     var pieData = globalData[timeseries];
-    for(i =0;i<pieData.length;i++){
+    for(var i = 0;i<pieData.length;i++){
         if (pieData[i][0]!=='exports'&&pieData[i][0]!=='pumps'){
             output.push(pieData[i]);
         }
@@ -747,7 +775,7 @@ function getLabel(){
     return finaloutput;
 }
 Highcharts.ajax({
-    url:'./springfield.json',
+    url:'./springfield_converted_json.js',
     dataType:'text',
     success: function(activity){   
         activity = JSON.parse(activity);
@@ -830,7 +858,12 @@ Highcharts.ajax({
                     dataLabels: {
                         enabled: true,
                         formatter: function(){
-                            return this.y+'%'
+                            if (this.y<0.1){
+                                return Highcharts.numberFormat(this.y,4)+'%';
+                            }
+                            else{
+                                return Highcharts.numberFormat(this.y,1)+'%'
+                            }
                         }
                     }
                 },
