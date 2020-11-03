@@ -1,6 +1,5 @@
 # dsc106 homework 3
 Name: Yu-Chieh Chen
-PID: A14388105
      
      
 
